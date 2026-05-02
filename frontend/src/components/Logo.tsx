@@ -2,8 +2,8 @@ import React from 'react';
 
 export const Logo = () => (
   <div className="flex items-center gap-3">
-    <div className="relative w-10 h-10 flex items-center justify-center">
-      <svg viewBox="0 0 100 100" className="w-full h-full filter drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]">
+    <div className="relative w-10 h-10 flex items-center justify-center shrink-0" style={{ width: '40px', height: '40px' }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full filter drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" style={{ display: 'block', maxWidth: '100%', maxHeight: '100%' }}>
         <defs>
           <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
