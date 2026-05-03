@@ -48,25 +48,36 @@ export const TransactionPanel = () => {
         </table>
       </div>
 
-      {/* Mobile View: Compressed Minimalist List */}
+      {/* Mobile View: Compressed Minimalist List with Headers */}
       <div className="md:hidden flex flex-col divide-y divide-white/[0.05]">
+        {/* Mobile Header Row */}
+        <div className="px-4 py-2 bg-white/[0.02] flex items-center justify-between text-[8px] font-black uppercase tracking-[0.25em] text-white/20">
+          <span className="w-1/3">Pair / Side</span>
+          <span className="w-1/3 text-center">Price</span>
+          <span className="w-1/3 text-right">Amount</span>
+        </div>
+
         {transactions.map((tx, i) => (
-          <div key={i} className="px-4 py-3 flex items-center justify-between gap-2">
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold text-white/90 tracking-tight">{tx.pair}</span>
-                <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-sm ${tx.side === 'BUY' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}`}>
-                  {tx.side}
-                </span>
-              </div>
-              <span className="text-[9px] font-medium text-white/30">{tx.time}</span>
+          <div key={i} className="px-4 py-3 flex items-center justify-between gap-1">
+            {/* Left: Pair & Side */}
+            <div className="w-1/3 flex flex-col gap-0.5">
+              <span className="text-[10px] font-bold text-white/90 tracking-tight">{tx.pair}</span>
+              <span className={`w-fit text-[7px] font-black px-1 py-0.5 rounded-sm ${tx.side === 'BUY' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}`}>
+                {tx.side}
+              </span>
+            </div>
+
+            {/* Center: Price */}
+            <div className="w-1/3 flex flex-col items-center">
+              <span className="text-[10px] font-mono font-bold text-white/60 tracking-tighter">{tx.price}</span>
             </div>
             
-            <div className="flex flex-col items-end gap-0.5">
+            {/* Right: Amount & Status */}
+            <div className="w-1/3 flex flex-col items-end gap-0.5">
               <span className="text-[11px] font-black text-white">{tx.amount}</span>
-              <div className="flex items-center gap-1 opacity-80 scale-90 origin-right">
+              <div className="flex items-center gap-1 opacity-70 scale-[0.8] origin-right">
                 <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                <span className="text-[8px] font-bold text-emerald-500 uppercase">Confirmed</span>
+                <span className="text-[8px] font-bold text-emerald-500 uppercase">Success</span>
               </div>
             </div>
           </div>
