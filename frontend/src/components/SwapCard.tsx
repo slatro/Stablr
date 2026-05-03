@@ -6,23 +6,23 @@ export const SwapCard = () => {
   const [toAmount, setToAmount] = useState('');
 
   return (
-    <div className="premium-card p-6 md:p-8 space-y-6 relative overflow-hidden">
-      {/* Subtle top glow */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+    <div className="premium-card p-8 space-y-6 relative overflow-hidden">
+      {/* Decorative inner glow */}
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 blur-[80px] pointer-events-none" />
       
-      <div className="flex items-center justify-between">
-        <h3 className="font-bold text-lg tracking-tight">Swap</h3>
-        <button className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all">
-          <Settings size={18} />
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-xl font-black text-white uppercase tracking-tighter">Swap</h3>
+        <button className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.05] text-white/40 hover:text-white transition-all">
+          <Settings size={20} />
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 relative">
         {/* Input From */}
-        <div className="input-group">
-          <div className="flex justify-between mb-3 text-xs font-bold uppercase tracking-widest text-white/30">
+        <div className="p-5 rounded-[28px] bg-white/[0.02] border border-white/[0.05]">
+          <div className="flex justify-between mb-4 px-1 text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/20">
             <span>Pay</span>
-            <span>Balance: 2,450.00</span>
+            <span className="text-white/40">Balance: 2,450.00</span>
           </div>
           <div className="flex items-center gap-4">
             <input 
@@ -30,28 +30,28 @@ export const SwapCard = () => {
               placeholder="0.0" 
               value={fromAmount}
               onChange={(e) => setFromAmount(e.target.value)}
-              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="swap-input"
             />
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all shrink-0">
-              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-[10px] font-bold">€</div>
-              <span className="font-bold text-sm">mEURC</span>
+            <button className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-white hover:bg-blue-500/20 transition-all shrink-0">
+              <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-[11px] font-bold shadow-lg">€</div>
+              <span className="font-bold text-sm tracking-tight">mEURC</span>
               <ChevronDown size={14} className="text-white/40" />
             </button>
           </div>
         </div>
 
         {/* Swap Divider */}
-        <div className="flex justify-center -my-4 relative z-10">
-          <div className="w-10 h-10 rounded-2xl bg-[#0a0b14] border border-white/10 flex items-center justify-center text-blue-500 shadow-2xl">
+        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+          <button className="w-11 h-11 rounded-2xl bg-[#0a1931] border border-white/[0.1] flex items-center justify-center text-blue-400 shadow-2xl hover:scale-110 transition-transform">
             <ArrowDown size={20} />
-          </div>
+          </button>
         </div>
 
         {/* Input To */}
-        <div className="input-group">
-          <div className="flex justify-between mb-3 text-xs font-bold uppercase tracking-widest text-white/30">
+        <div className="p-5 rounded-[28px] bg-white/[0.02] border border-white/[0.05] pt-10">
+          <div className="flex justify-between mb-4 px-1 text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/20">
             <span>Receive</span>
-            <span>Balance: 1,200.00</span>
+            <span className="text-white/40">Balance: 1,200.00</span>
           </div>
           <div className="flex items-center gap-4">
             <input 
@@ -59,11 +59,11 @@ export const SwapCard = () => {
               placeholder="0.0" 
               value={toAmount}
               readOnly
-              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-white/40"
+              className="swap-input opacity-70"
             />
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all shrink-0">
-              <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-[10px] font-bold">$</div>
-              <span className="font-bold text-sm">mUSDC</span>
+            <button className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/[0.05] border border-white/[0.05] text-white hover:bg-white/[0.08] transition-all shrink-0">
+              <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-[11px] font-bold shadow-lg">$</div>
+              <span className="font-bold text-sm tracking-tight">mUSDC</span>
               <ChevronDown size={14} className="text-white/40" />
             </button>
           </div>
@@ -71,25 +71,25 @@ export const SwapCard = () => {
       </div>
 
       {/* Stats Summary */}
-      <div className="px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/[0.05] space-y-2">
-        <div className="flex justify-between items-center text-xs">
-          <span className="text-white/30 font-medium flex items-center gap-1.5">Exchange Rate <Info size={12} /></span>
-          <span className="font-bold">1 mEURC ≈ 1.084 mUSDC</span>
+      <div className="mt-6 p-5 rounded-[24px] bg-blue-500/[0.02] border border-blue-500/10 space-y-3">
+        <div className="flex justify-between items-center text-[11px] font-bold">
+          <span className="text-white/30 uppercase tracking-widest flex items-center gap-2">Rate <Info size={12} /></span>
+          <span className="text-white/80">1 mEURC ≈ 1.084 mUSDC</span>
         </div>
-        <div className="flex justify-between items-center text-xs">
-          <span className="text-white/30 font-medium flex items-center gap-1.5">Slippage Tolerance <Info size={12} /></span>
-          <span className="font-bold text-blue-400">0.5%</span>
+        <div className="flex justify-between items-center text-[11px] font-bold">
+          <span className="text-white/30 uppercase tracking-widest flex items-center gap-2">Slippage <Settings size={12} /></span>
+          <span className="text-blue-400">0.5%</span>
         </div>
       </div>
 
       <div className="mt-8 flex justify-center">
-        <button className="btn-premium px-8 py-3 text-[10px] uppercase tracking-[0.2em]">
+        <button className="btn-premium px-20 py-4.5 text-[12px] uppercase tracking-[0.25em]">
           SWAP
         </button>
       </div>
 
-      <div className="text-center">
-        <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]">
+      <div className="text-center mt-6">
+        <p className="text-[9px] font-extrabold text-white/10 uppercase tracking-[0.3em]">
           Powered by Arc Settlement Network
         </p>
       </div>
