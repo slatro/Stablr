@@ -132,9 +132,9 @@ export default function App() {
 
       <footer className="py-12 px-8 border-t border-white/[0.05] bg-white/[0.01]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex flex-col gap-4 items-center md:items-start">
+            <div className="flex flex-col gap-4 items-start">
               <Logo />
-              <p className="text-[10px] text-white/30 font-bold max-w-xs uppercase tracking-[0.2em] mt-1 text-center md:text-left">
+              <p className="text-[10px] text-white/30 font-bold max-w-xs uppercase tracking-[0.2em] mt-1 text-left">
                 Institutional Stablecoin Settlement Network
               </p>
             </div>
