@@ -2,14 +2,16 @@ import React from 'react';
 
 export const Logo = () => (
   <div className="flex items-center gap-4 group cursor-pointer">
-    {/* The ABSOLUTE REAL Logo Image (Bigger & Cleaner) */}
-    <div className="shrink-0 transition-all duration-500 group-hover:scale-105">
+    {/* The ABSOLUTE REAL Logo Image (Now with surgical background removal) */}
+    <div className="relative w-[56px] h-[56px] flex items-center justify-center shrink-0">
       <img 
         src="/assets/logo-real-final.jpg" 
         alt="ArcFX Logo"
-        className="w-[56px] h-[56px] object-contain mix-blend-screen contrast-[1.1] brightness-[1.1]"
+        className="w-full h-full object-contain mix-blend-screen"
         style={{ 
-          filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.3))'
+          filter: 'contrast(1.6) brightness(0.85) saturate(1.1)',
+          maskImage: 'radial-gradient(circle, black 60%, transparent 95%)',
+          WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 95%)'
         }}
       />
     </div>
