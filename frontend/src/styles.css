@@ -7,7 +7,7 @@
   --font-main: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Frosted Glass Palette - ARC BLUE ORIENTED */
+  /* Frosted Glass Palette - TRANSPARENCY FOCUSED */
   --bg-deep: #060608;
   --accent-blue: #3b82f6;
   --arc-blue-glow: #1e40af;
@@ -26,11 +26,11 @@ body {
   position: relative;
 }
 
-/* Background Elements */
+/* Background Elements - Ensure they are visible behind cards */
 .bg-orbs {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -10;
   overflow: hidden;
   pointer-events: none;
 }
@@ -39,7 +39,7 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(140px);
-  opacity: 0.12;
+  opacity: 0.15;
 }
 
 .orb-1 {
@@ -60,23 +60,13 @@ body {
   animation: float 20s infinite alternate-reverse;
 }
 
-.orb-3 {
-  width: 400px;
-  height: 400px;
-  background: #60a5fa;
-  top: 40%;
-  left: 30%;
-  opacity: 0.05;
-  animation: float 30s infinite alternate;
-}
-
-/* Animated Arcs - Refined Snake Effect */
+/* Animated Arcs - Increased brightness to be seen through glass */
 .bg-arcs {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: -15;
   pointer-events: none;
-  opacity: 0.45;
+  opacity: 0.8; /* Increased opacity */
 }
 
 .arc-line {
@@ -84,13 +74,13 @@ body {
   stroke-dashoffset: 2000;
   animation: slitherArc 14s linear infinite;
   stroke-linecap: round;
-  stroke-width: 0.6px;
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+  stroke-width: 0.8px;
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
 }
 
 .snake-head {
   fill: white;
-  filter: blur(2px) drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+  filter: blur(2px) drop-shadow(0 0 15px rgba(255, 255, 255, 1));
 }
 
 @keyframes slitherArc {
@@ -103,28 +93,30 @@ body {
   to { transform: translate(60px, 60px); }
 }
 
-/* ULTIMATE FROSTED GLASS - Optimized with Webkit Compatibility for Mobile */
+/* REAL FROSTED GLASS - High Transparency & Blur */
 .premium-card {
-  @apply rounded-[32px] border border-white/[0.12] transition-all duration-700 relative overflow-hidden;
+  @apply rounded-[32px] border border-white/[0.1] transition-all duration-700 relative overflow-hidden;
   
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  
+  /* Critical: Low opacity background to see through */
   background: linear-gradient(
     135deg, 
-    rgba(255, 255, 255, 0.06) 0%, 
-    rgba(10, 10, 12, 0.5) 100%
+    rgba(255, 255, 255, 0.03) 0%, 
+    rgba(255, 255, 255, 0.01) 100%
   );
   
+  /* Strong Blur */
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  
   box-shadow: 
-    0 40px 100px -20px rgba(0, 0, 0, 0.9),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    0 40px 100px -20px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
 @media (min-width: 1280px) {
   .premium-card {
-    backdrop-filter: blur(120px);
-    -webkit-backdrop-filter: blur(120px);
+    backdrop-filter: blur(60px);
+    -webkit-backdrop-filter: blur(60px);
   }
 }
 
@@ -132,52 +124,33 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.1), transparent 70%);
+  background: radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.05), transparent 70%);
   pointer-events: none;
 }
 
 .premium-card:hover, .premium-card:active {
-  @apply border-white/[0.2] bg-white/[0.1];
+  @apply border-white/[0.15] bg-white/[0.04];
   transform: translateY(-2px);
-  box-shadow: 
-    0 50px 120px -20px rgba(0, 0, 0, 0.95),
-    inset 0 1px 2px rgba(255, 255, 255, 0.25);
 }
 
 .glass-frame {
-  @apply rounded-[32px] border border-white/[0.15] overflow-hidden transition-all duration-700;
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  background: rgba(10, 10, 15, 0.6);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  @apply rounded-[32px] border border-white/[0.12] overflow-hidden transition-all duration-700;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 @media (min-width: 1280px) {
   .glass-frame {
-    backdrop-filter: blur(100px);
-    -webkit-backdrop-filter: blur(100px);
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
   }
 }
 
+/* Internal components must also be transparent to not block the main glass */
 .swap-input {
-  @apply bg-white/[0.02] border border-white/[0.05] rounded-2xl px-5 py-4 w-full 
-         text-2xl font-bold text-white placeholder-white/10 outline-none transition-all duration-300;
-}
-
-.swap-input:focus {
-  @apply border-white/20 bg-white/[0.05];
-}
-
-.btn-premium {
-  @apply font-black rounded-2xl transition-all duration-500 transform active:scale-95;
-  background: linear-gradient(135deg, #333, #000); 
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.btn-premium:hover {
-  background: linear-gradient(135deg, #444, #111);
-  border-color: rgba(255, 255, 255, 0.2);
+  @apply bg-transparent border-none p-0 w-full 
+         text-2xl font-bold text-white placeholder-white/10 outline-none;
 }
 
 .nav-link {
