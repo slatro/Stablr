@@ -152,5 +152,14 @@ body {
   @apply text-white/90;
 }
 
+.animate-ticker {
+  animation: ticker 60s linear infinite;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 .animate-fade-in { animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .no-scrollbar::-webkit-scrollbar { display: none; }

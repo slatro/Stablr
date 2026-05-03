@@ -4,6 +4,7 @@ import { SwapCard } from "./components/SwapCard";
 import { TradingViewChart as PriceChart } from "./components/PriceChart";
 import { TransactionPanel } from "./components/TransactionPanel";
 import { Logo } from "./components/Logo";
+import { ActivityTicker } from "./components/ActivityTicker";
 import { Zap, Info, Settings, ShieldCheck } from "lucide-react";
 
 export default function App() {
@@ -47,54 +48,7 @@ export default function App() {
       
       <Header />
       
-      {/* Restructured Top Info Bar with Restored Ticker */}
-      <div className="bg-white/[0.02] border-b border-white/[0.05] py-2.5 px-6">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-8">
-          
-          {/* Left: Protocol Status */}
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="flex items-center gap-2 px-2 py-0.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
-              <Zap size={10} className="text-blue-400" />
-              <span className="text-[9px] font-extrabold text-blue-400 uppercase tracking-widest">v2.0 Active</span>
-            </div>
-            <div className="h-4 w-px bg-white/10 hidden md:block" />
-            <p className="text-[10px] text-white/40 font-medium hidden md:block uppercase tracking-wider">
-              Settlement Protocol
-            </p>
-          </div>
-
-          {/* Middle: Restored Live Swap Ticker (Centered & Elegant) */}
-          <div className="flex-1 max-w-2xl overflow-hidden pointer-events-none">
-            <div className="flex items-center gap-12 animate-infinite-scroll whitespace-nowrap">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">
-                  <span className="text-blue-400">#SWAP</span>
-                  <span className="text-white/80">0x71...3912 swapped 1.2k mEURC → 1.3k mUSDC</span>
-                  <span className="text-white/20">•</span>
-                  <span className="text-blue-400">#SWAP</span>
-                  <span className="text-white/80">0xA4...9281 swapped 500 mUSDC → 462 mEURC</span>
-                  <span className="text-white/20">•</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: Arc Ecosystem Section */}
-          <div className="flex items-center gap-3 bg-white/[0.03] px-3 py-1.5 rounded-xl border border-white/[0.05] shrink-0">
-            <img 
-              src="/assets/logo-final.png" 
-              alt="Arc" 
-              className="w-4 h-4 mix-blend-screen" 
-              style={{ 
-                filter: 'contrast(1.6) brightness(0.85)',
-                maskImage: 'radial-gradient(circle, black 60%, transparent 95%)',
-                WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 95%)'
-              }}
-            />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Arc Ecosystem</span>
-          </div>
-        </div>
-      </div>
+      <ActivityTicker />
 
       <main className="flex-1 flex flex-col items-center relative py-4 md:py-8 px-4 md:px-6">
         {/* Professional 2-Column Layout - REORDERED FOR MOBILE (SWAP FIRST) */}
