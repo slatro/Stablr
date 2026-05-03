@@ -54,7 +54,6 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
         </div>
       </div>
       
-      {/* LIGHT & CLEAR GLASS BOXES - NO MORE GREY */}
       <div className="bg-white/10 border border-white/[0.12] backdrop-blur-md rounded-[12px] p-3.5 md:p-4 flex items-center justify-between hover:bg-white/[0.15] transition-all group shadow-inner shadow-white/5">
         <button className="flex items-center gap-3 px-2 py-0.5 rounded-[12px] hover:bg-white/5 transition-all">
           <div className={`w-7 h-7 rounded-full ${iconColor} flex items-center justify-center shadow-lg shadow-black/20`}>
@@ -95,8 +94,8 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
         </button>
       </div>
 
-      {/* LAYER 2: MAIN ASSET CARD - EXTENDED TO MATCH TRADINGVIEW HEIGHT */}
-      <div className="premium-card p-6 md:p-8 flex flex-col relative">
+      {/* LAYER 2: MAIN ASSET CARD - REFINED HEIGHT FOR PERFECT ALIGNMENT */}
+      <div className="premium-card p-5 md:p-7 flex flex-col relative">
         <TokenBox 
           type="From" 
           symbol="mEURC" 
@@ -107,7 +106,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
           isReadOnly={false}
         />
         
-        <div className="relative h-2 flex items-center justify-center my-6 md:my-8">
+        <div className="relative h-2 flex items-center justify-center my-5 md:my-6">
           <div className="absolute inset-x-0 h-px bg-white/[0.04]" />
           <button className="z-10 w-8 h-8 rounded-full bg-[#0a0a0c] border border-white/[0.08] flex items-center justify-center text-blue-400 hover:scale-110 transition-transform shadow-lg">
             <ArrowDown size={14} />
