@@ -99,24 +99,21 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right Column: Swap + Bottom Bar (MIRRORED Symmetry) */}
-          <div className="flex flex-col gap-4">
+          {/* Right Column: Swap + Bottom Bar (Compact & Aligned) */}
+          <div className="flex flex-col gap-4 items-center xl:items-start">
             <SwapCard />
-            <div className="flex items-center gap-4 px-6 py-4 premium-card bg-blue-500/[0.03] h-[52px]">
-              <div className="flex items-center gap-2">
-                <Info size={12} className="text-white/20" />
-                <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Slippage: 0.5%</span>
+            <div className="flex items-center w-full max-w-[440px] premium-card bg-blue-500/[0.03] h-[52px] divide-x divide-white/10">
+              <div className="flex-1 flex flex-col items-center justify-center gap-0.5">
+                <span className="text-[7px] font-extrabold text-white/20 uppercase tracking-[0.2em]">Slippage</span>
+                <span className="text-[10px] font-bold text-blue-400">0.5%</span>
               </div>
-              <div className="flex-1" />
-              <div className="flex gap-6 items-center">
-                 <div className="flex items-center gap-2">
-                   <Settings size={12} className="text-white/20" />
-                   <span className="text-[10px] font-mono text-white/60 tracking-tight uppercase">Fee: 0.03%</span>
-                 </div>
-                 <div className="flex items-center gap-2">
-                   <ShieldCheck size={12} className="text-white/20" />
-                   <span className="text-[10px] font-mono text-white/60 tracking-tight uppercase">Stability: 99.9%</span>
-                 </div>
+              <div className="flex-1 flex flex-col items-center justify-center gap-0.5">
+                <span className="text-[7px] font-extrabold text-white/20 uppercase tracking-[0.2em]">Fee</span>
+                <span className="text-[10px] font-bold text-white/70">0.03%</span>
+              </div>
+              <div className="flex-1 flex flex-col items-center justify-center gap-0.5">
+                <span className="text-[7px] font-extrabold text-white/20 uppercase tracking-[0.2em]">Stability</span>
+                <span className="text-[10px] font-bold text-emerald-500/80">99.9%</span>
               </div>
             </div>
           </div>
