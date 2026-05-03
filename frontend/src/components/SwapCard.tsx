@@ -10,15 +10,15 @@ export const SwapCard = () => {
     setIsFlipped(!isFlipped);
   };
 
-  const AssetSection = ({ type }: { type: 'pay' | 'receive' }) => {
-    const isPay = type === 'pay';
-    const currentIsFlipped = isPay ? isFlipped : !isFlipped;
+  const AssetSection = ({ type }: { type: 'from' | 'to' }) => {
+    const isFrom = type === 'from';
+    const currentIsFlipped = isFrom ? isFlipped : !isFlipped;
     
     return (
       <div className="flex-1 min-h-[140px] p-6 rounded-[28px] bg-white/[0.02] border border-white/[0.05] flex flex-col justify-center transition-all hover:bg-white/[0.04]">
-        <div className="flex justify-between mb-4 px-1 text-[10px] font-extrabold uppercase tracking-[0.3em] text-white/30">
-          <span>{currentIsFlipped ? 'Receive' : 'Pay'}</span>
-          <span className="text-white/60">Balance: {currentIsFlipped ? '1,200.00' : '2,450.00'}</span>
+        <div className="flex justify-between mb-4 px-1 text-[10px] font-extrabold uppercase tracking-[0.35em] text-white/20">
+          <span>{type}</span>
+          <span className="text-white/40">Balance: {currentIsFlipped ? '1,200.00' : '2,450.00'}</span>
         </div>
         <div className="flex items-center gap-4">
           <input 
@@ -26,8 +26,8 @@ export const SwapCard = () => {
             placeholder="0.0" 
             value={currentIsFlipped ? toAmount : fromAmount}
             onChange={(e) => currentIsFlipped ? setToAmount(e.target.value) : setFromAmount(e.target.value)}
-            readOnly={!currentIsFlipped && type === 'receive'}
-            className={`swap-input !text-3xl !py-0 flex-1 ${!currentIsFlipped && type === 'receive' ? 'opacity-70' : ''}`}
+            readOnly={!currentIsFlipped && type === 'to'}
+            className={`swap-input !text-3xl !py-0 flex-1 ${!currentIsFlipped && type === 'to' ? 'opacity-70' : ''}`}
           />
           <button className="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-white hover:bg-blue-500/20 transition-all shrink-0">
             <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold shadow-lg ${currentIsFlipped ? 'bg-emerald-500' : 'bg-blue-600'}`}>
@@ -46,17 +46,16 @@ export const SwapCard = () => {
       {/* Subtle inner glow */}
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 blur-[80px] pointer-events-none" />
       
-      <div className="flex items-center justify-between mb-4 px-2">
-        <h3 className="text-xl font-black text-white uppercase tracking-tighter">SWAP</h3>
+      <div className="flex items-center justify-end mb-4 px-2">
         <button className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.05] text-white/40 hover:text-white transition-all">
           <Settings size={22} />
         </button>
       </div>
 
       <div className="flex-1 flex flex-col gap-2 relative">
-        <AssetSection type="pay" />
+        <AssetSection type="from" />
         
-        {/* Flip Button - Perfectly Centered Over the gap */}
+        {/* Flip Button - Perfectly Centered */}
         <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
           <button 
             onClick={handleFlip}
@@ -66,7 +65,7 @@ export const SwapCard = () => {
           </button>
         </div>
 
-        <AssetSection type="receive" />
+        <AssetSection type="to" />
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
