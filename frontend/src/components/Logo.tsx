@@ -2,14 +2,14 @@ import React from 'react';
 
 export const Logo = () => (
   <div className="flex items-center gap-4 group cursor-pointer">
-    {/* The REAL Image File (Right-clickable) */}
+    {/* The Latest Original Logo Image */}
     <div className="shrink-0 transition-all duration-500 group-hover:scale-105">
       <img 
-        src="/assets/logo-final.png" 
+        src="/assets/logo-v3.png" 
         alt="ArcFX Logo"
-        className="w-[44px] h-[44px] object-contain mix-blend-screen brightness-110 contrast-110"
+        className="w-[48px] h-[48px] object-contain mix-blend-screen brightness-110 contrast-125"
         style={{ 
-          filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.4))'
+          filter: 'drop-shadow(0 0 12px rgba(59, 130, 246, 0.5))'
         }}
       />
     </div>
