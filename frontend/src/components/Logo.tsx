@@ -2,15 +2,12 @@ import React from 'react';
 
 export const Logo = () => (
   <div className="flex items-center gap-4 group cursor-pointer">
-    {/* Pure Original Image File (No filters, just blend) */}
+    {/* The ABSOLUTE REAL Logo Image (Right-clickable) */}
     <div className="shrink-0 transition-all duration-500 group-hover:scale-105">
       <img 
-        src="/assets/logo-v4.png" 
+        src="/assets/logo-real-final.jpg" 
         alt="ArcFX Logo"
         className="w-[48px] h-[48px] object-contain mix-blend-screen"
-        style={{ 
-          imageRendering: 'auto'
-        }}
       />
     </div>
 
