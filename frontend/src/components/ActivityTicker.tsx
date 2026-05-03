@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const ActivityTicker = () => {
+export const ActivityTicker = ({ isMinimal = false }: { isMinimal?: boolean }) => {
   const transactions = [
     { hash: "0x71...3912", type: "SWAP", details: "1.2K MEURC → 1.3K MUSDC" },
     { hash: "0xA4...9281", type: "SWAP", details: "500 MUSDC → 460 MEURC" },
@@ -11,10 +11,10 @@ export const ActivityTicker = () => {
   ];
 
   // Duplicate for seamless loop
-  const displayTxs = [...transactions, ...transactions, ...transactions];
+  const displayTxs = [...transactions, ...transactions, ...transactions, ...transactions];
 
   return (
-    <div className="w-full bg-white/[0.02] border-y border-white/[0.05] backdrop-blur-md overflow-hidden py-2.5 relative">
+    <div className={`w-full overflow-hidden ${isMinimal ? 'bg-transparent border-0 py-0' : 'bg-white/[0.02] border-y border-white/[0.05] backdrop-blur-md py-2.5'} relative`}>
       <div className="flex whitespace-nowrap animate-ticker">
         {displayTxs.map((tx, i) => (
           <div key={i} className="flex items-center gap-3 px-8 border-r border-white/5 last:border-r-0">

@@ -48,7 +48,43 @@ export default function App() {
       
       <Header />
       
-      <ActivityTicker />
+      {/* Composite Live Terminal Bar */}
+      <div className="bg-white/[0.02] border-b border-white/[0.05] py-2 px-4 md:px-6 relative overflow-hidden">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4 md:gap-8">
+          
+          {/* Left: Protocol Status */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2 px-2 py-0.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <Zap size={10} className="text-blue-400" />
+              <span className="text-[9px] font-extrabold text-blue-400 uppercase tracking-widest">v2.0 Active</span>
+            </div>
+            <div className="h-4 w-px bg-white/10 hidden md:block" />
+            <span className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] hidden md:block">
+              Settlement Protocol
+            </span>
+          </div>
+
+          {/* Middle: Integrated Ticker (Takes remaining space) */}
+          <div className="flex-1 overflow-hidden pointer-events-none">
+            <ActivityTicker isMinimal />
+          </div>
+
+          {/* Right: Arc Ecosystem Section */}
+          <div className="flex items-center gap-3 bg-white/[0.03] px-3 py-1.5 rounded-xl border border-white/[0.05] shrink-0">
+            <img 
+              src="/assets/logo-final.png" 
+              alt="Arc" 
+              className="w-4 h-4 mix-blend-screen" 
+              style={{ 
+                filter: 'contrast(1.6) brightness(0.85)',
+                maskImage: 'radial-gradient(circle, black 60%, transparent 95%)',
+                WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 95%)'
+              }}
+            />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 hidden sm:block">Arc Ecosystem</span>
+          </div>
+        </div>
+      </div>
 
       <main className="flex-1 flex flex-col items-center relative py-4 md:py-8 px-4 md:px-6">
         {/* Professional 2-Column Layout - REORDERED FOR MOBILE (SWAP FIRST) */}
