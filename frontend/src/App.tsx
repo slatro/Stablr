@@ -95,15 +95,16 @@ export default function App() {
           {/* Swap Column (Order-1 on mobile, Order-2 on desktop) */}
           <div className="flex flex-col items-center order-1 xl:order-2">
             <SwapCard slippage={slippage} setSlippage={setSlippage} />
-            {/* Restored Swap Detail Bar */}
-            <div className="w-full mt-4 flex flex-col gap-2 px-6">
-              <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-white/30">
+            {/* Sleek Horizontal Info Bar */}
+            <div className="flex items-center gap-4 px-1 mt-2 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+              <div className="flex items-center gap-2">
                 <span>Slippage Tolerance</span>
                 <span className="text-blue-400">{slippage}%</span>
               </div>
-              <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-white/30">
+              <div className="w-px h-3 bg-white/10" />
+              <div className="flex items-center gap-2">
                 <span>Network Fee</span>
-                <span className="text-white/60">~$0.12</span>
+                <span className="text-white/40">~$0.12</span>
               </div>
             </div>
           </div>
