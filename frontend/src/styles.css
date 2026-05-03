@@ -157,3 +157,13 @@ body {
 
 .animate-fade-in { animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Hide Number Input Spinners - FOR CLEAN LOOK */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
