@@ -76,7 +76,7 @@ export default function App() {
                 WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 95%)'
               }}
             />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Arc Ecosystem</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Arc Testnet</span>
           </div>
         </div>
       </div>
