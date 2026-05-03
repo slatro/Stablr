@@ -6,16 +6,18 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
   const [toAmount, setToAmount] = useState('10.74');
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [rate, setRate] = useState(1.0740);
+  const [rate, setRate] = useState(1.1748); // Initial rate from screenshot
   
   // Function to fetch real-time rate from Coinbase API
   const fetchLiveRate = async () => {
     try {
+      // Fetching EURC-USDC or EUR-USD as a reference
       const response = await fetch('https://api.coinbase.com/v2/prices/EUR-USD/spot');
       const data = await response.json();
       if (data && data.data && data.data.amount) {
         const newRate = parseFloat(data.data.amount);
         setRate(newRate);
+        console.log("Coinbase Rate Sync:", newRate);
       }
     } catch (error) {
       console.error('Coinbase API Error:', error);
