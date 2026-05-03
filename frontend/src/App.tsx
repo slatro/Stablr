@@ -18,9 +18,6 @@ export default function App() {
               <Zap size={10} className="text-blue-400" />
               <span className="text-[9px] font-extrabold text-blue-400 uppercase tracking-widest">v2.0 Active</span>
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-              ArcFX Exchange
-            </h1>
             <div className="h-4 w-px bg-white/10 hidden md:block" />
             <p className="text-[11px] text-white/30 font-medium hidden md:block">
               Institutional-grade stablecoin swaps on Arc Network.
@@ -75,7 +72,7 @@ export default function App() {
 
             <div className="premium-card p-4">
               <div className="flex items-center gap-2 text-white/40 mb-3">
-                <Globe size={12} />
+                <img src="/assets/arc-logo.png" alt="Arc" className="w-3.5 h-3.5 mix-blend-screen brightness-125" />
                 <span className="text-[9px] font-bold uppercase tracking-widest">Arc Ecosystem</span>
               </div>
               <p className="text-[10px] leading-relaxed text-white/30 mb-3">
