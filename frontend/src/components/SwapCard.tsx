@@ -4,7 +4,6 @@ import { ArrowDown, Settings, ChevronDown, Wallet, Edit2, RefreshCw } from 'luci
 export const SwapCard = () => {
   const [fromAmount, setFromAmount] = useState('10');
   const [toAmount, setToAmount] = useState('0.1949');
-  const [activeTab, setActiveTab] = useState('Swap');
 
   const TokenBox = ({ type, amount, setAmount, symbol, name, iconColor }: any) => (
     <div className="flex flex-col gap-2 mb-4">
@@ -47,21 +46,12 @@ export const SwapCard = () => {
 
   return (
     <div className="flex flex-col gap-3 w-full max-w-[480px]">
-      {/* LAYER 1: SEGMENTED HEADER */}
-      <div className="premium-card p-1.5 flex gap-1">
-        {['Swap', 'TWAP', 'Limit'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2.5 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all ${
-              activeTab === tab 
-                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-inner' 
-                : 'text-white/20 hover:text-white/40'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+      {/* LAYER 1: SIMPLE HEADER */}
+      <div className="premium-card p-4 flex items-center justify-between">
+        <h1 className="text-xs font-black uppercase tracking-[0.6em] text-blue-400/90 pl-2">Swap</h1>
+        <button className="p-2 rounded-xl hover:bg-white/[0.05] transition-all text-white/30 hover:text-white">
+          <Settings size={18} />
+        </button>
       </div>
 
       {/* LAYER 2: MAIN ASSET CARD */}
@@ -87,7 +77,7 @@ export const SwapCard = () => {
           symbol="mUSDC" 
           name="Arc Dollar" 
           amount={toAmount} 
-          setAmount={setToAmount}
+          setToAmount={setToAmount}
           iconColor="bg-emerald-500"
         />
       </div>
@@ -104,7 +94,7 @@ export const SwapCard = () => {
           </div>
         </div>
 
-        <button className="w-full py-4 md:py-5 rounded-[24px] bg-cyan-500/80 hover:bg-cyan-400 text-black font-bold text-base md:text-lg transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] active:scale-95">
+        <button className="w-full py-3.5 md:py-4 rounded-[24px] bg-cyan-500/80 hover:bg-cyan-400 text-white font-bold text-base md:text-lg transition-all shadow-[0_10px_30px_rgba(6,182,212,0.2)] active:scale-95">
           Swap
         </button>
 
