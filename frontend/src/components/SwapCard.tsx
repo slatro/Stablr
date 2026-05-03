@@ -6,12 +6,11 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
   const [toAmount, setToAmount] = useState('10.74');
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [rate, setRate] = useState(1.1748); // Initial rate from screenshot
+  const [rate, setRate] = useState(1.1733); 
   
   // Function to fetch real-time rate from Coinbase API
   const fetchLiveRate = async () => {
     try {
-      // Fetching EURC-USDC or EUR-USD as a reference
       const response = await fetch('https://api.coinbase.com/v2/prices/EUR-USD/spot');
       const data = await response.json();
       if (data && data.data && data.data.amount) {
@@ -59,7 +58,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
         </div>
       </div>
       
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-[12px] p-3 md:p-3.5 flex items-center justify-between hover:bg-white/[0.04] transition-all group">
+      <div className="bg-white/[0.02] border border-white/[0.06] rounded-[12px] p-3.5 md:p-4 flex items-center justify-between hover:bg-white/[0.04] transition-all group">
         <button className="flex items-center gap-3 px-2 py-0.5 rounded-[12px] hover:bg-white/5 transition-all">
           <div className={`w-7 h-7 rounded-full ${iconColor} flex items-center justify-center shadow-lg shadow-black/20`}>
             <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20" />
@@ -97,8 +96,8 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
         </button>
       </div>
 
-      {/* LAYER 2: MAIN ASSET CARD */}
-      <div className="premium-card p-4 md:p-5 relative">
+      {/* LAYER 2: MAIN ASSET CARD - INCREASED VERTICAL SPACING */}
+      <div className="premium-card p-6 md:p-8 flex flex-col relative">
         <TokenBox 
           type="From" 
           symbol="mEURC" 
@@ -109,7 +108,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
           isReadOnly={false}
         />
         
-        <div className="relative h-2 flex items-center justify-center my-1">
+        <div className="relative h-2 flex items-center justify-center my-4 md:my-5">
           <div className="absolute inset-x-0 h-px bg-white/[0.04]" />
           <button className="z-10 w-7 h-7 rounded-full bg-[#0a0a0c] border border-white/[0.08] flex items-center justify-center text-blue-400 hover:scale-110 transition-transform shadow-lg">
             <ArrowDown size={12} />
