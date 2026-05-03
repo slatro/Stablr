@@ -65,19 +65,25 @@ body {
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .arc-line {
-  stroke-dasharray: 400 1600; /* Snake body length and gap */
-  stroke-dashoffset: 2000;
+  stroke-dasharray: 600 2400; /* Longer snake body */
+  stroke-dashoffset: 3000;
   animation: slitherArc 12s linear infinite;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+  stroke-width: 2px; /* Thicker body as requested */
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+}
+
+.snake-head {
+  fill: white;
+  filter: blur(4px) drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
 }
 
 @keyframes slitherArc {
-  0% { stroke-dashoffset: 2000; }
+  0% { stroke-dashoffset: 3000; }
   100% { stroke-dashoffset: 0; }
 }
 

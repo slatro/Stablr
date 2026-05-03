@@ -12,11 +12,28 @@ export default function App() {
       <div className="bg-arcs">
         <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none" fill="none">
           {/* Master Snake 1 */}
-          <path className="arc-line" d="M -100 200 C 200 100, 400 900, 700 500 S 1200 800, 1500 200" stroke="white" strokeWidth="0.5" style={{ animationDuration: '14s', animationDelay: '0s' }} />
+          <path id="snake-path-1" className="arc-line" d="M -100 200 C 200 100, 400 900, 700 500 S 1200 800, 1500 200" stroke="white" strokeWidth="2" style={{ animationDuration: '14s', animationDelay: '0s' }} />
+          <circle r="4" className="snake-head">
+            <animateMotion dur="14s" repeatCount="indefinite">
+              <mpath href="#snake-path-1" />
+            </animateMotion>
+          </circle>
+
           {/* Master Snake 2 */}
-          <path className="arc-line" d="M -200 800 C 300 900, 100 100, 500 500 S 900 100, 1200 800" stroke="white" strokeWidth="0.3" style={{ animationDuration: '18s', animationDelay: '4s' }} />
+          <path id="snake-path-2" className="arc-line" d="M -200 800 C 300 900, 100 100, 500 500 S 900 100, 1200 800" stroke="white" strokeWidth="1.5" style={{ animationDuration: '18s', animationDelay: '4s' }} />
+          <circle r="3" className="snake-head" style={{ opacity: 0.6 }}>
+            <animateMotion dur="18s" begin="4s" repeatCount="indefinite">
+              <mpath href="#snake-path-2" />
+            </animateMotion>
+          </circle>
+
           {/* Master Snake 3 */}
-          <path className="arc-line" d="M 500 -100 C 200 400, 800 600, 500 1100" stroke="white" strokeWidth="0.4" style={{ animationDuration: '20s', animationDelay: '8s' }} />
+          <path id="snake-path-3" className="arc-line" d="M 500 -100 C 200 400, 800 600, 500 1100" stroke="white" strokeWidth="1.8" style={{ animationDuration: '20s', animationDelay: '8s' }} />
+          <circle r="3.5" className="snake-head">
+            <animateMotion dur="20s" begin="8s" repeatCount="indefinite">
+              <mpath href="#snake-path-3" />
+            </animateMotion>
+          </circle>
         </svg>
       </div>
 
