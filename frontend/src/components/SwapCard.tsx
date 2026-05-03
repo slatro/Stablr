@@ -126,8 +126,8 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
         />
       </div>
 
-      {/* LAYER 3: COMPACT GRADIENT ACTION CARD */}
-      <div className="premium-card p-3 md:p-3.5 flex flex-col gap-3">
+      {/* LAYER 3: COMPACT GRADIENT ACTION CARD - SLIGHTLY EXTENDED FOR ALIGNMENT */}
+      <div className="premium-card p-4 md:p-5.5 flex flex-col gap-3">
         <div className="flex justify-between items-center px-1">
           <span className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] border-b border-dashed border-white/5 pb-0.5">
             Slippage Tolerance
