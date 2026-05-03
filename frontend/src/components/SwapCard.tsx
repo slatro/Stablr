@@ -6,18 +6,35 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
   const [toAmount, setToAmount] = useState('11.748');
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [rate, setRate] = useState(1.1748);
   
-  const RATE = 1.1748;
+  // Function to simulate fetching live rate
+  const fetchNewRate = () => {
+    // Simulate a small market movement around 1.1748
+    const movement = (Math.random() - 0.5) * 0.005;
+    const newRate = 1.1748 + movement;
+    setRate(parseFloat(newRate.toFixed(4)));
+  };
 
+  // Auto-refresh rate every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleRefresh();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update "toAmount" whenever "fromAmount" or "rate" changes
   useEffect(() => {
     if (!isNaN(parseFloat(fromAmount))) {
-      const calculated = parseFloat(fromAmount) * RATE;
+      const calculated = parseFloat(fromAmount) * rate;
       setToAmount(calculated.toFixed(4));
     }
-  }, [fromAmount]);
+  }, [fromAmount, rate]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
+    fetchNewRate();
     setTimeout(() => setIsRefreshing(false), 800);
   };
 
@@ -137,7 +154,9 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
             className="flex items-center gap-1.5 text-[9px] font-bold text-white/20 tracking-tight hover:text-blue-400 transition-colors"
           >
             <RefreshCw size={10} className={`text-blue-500/60 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span>1 mEURC ≈ {RATE} mUSDC</span>
+            <span className={isRefreshing ? 'animate-pulse text-white' : ''}>
+              1 mEURC ≈ {rate} mUSDC
+            </span>
           </button>
           <div className="flex items-center gap-1 text-[9px] font-bold text-white/20 uppercase tracking-widest">
             Fee <span className="text-white/40">0.0025 mEURC</span> <ChevronDown size={8} />
