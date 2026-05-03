@@ -7,7 +7,7 @@
   --font-main: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Frosted Glass Palette - TRANSPARENCY FOCUSED */
+  /* Frosted Glass Palette - TRUE GLASSMORPHISM */
   --bg-deep: #060608;
   --accent-blue: #3b82f6;
   --arc-blue-glow: #1e40af;
@@ -26,7 +26,7 @@ body {
   position: relative;
 }
 
-/* Background Elements - Ensure they are visible behind cards */
+/* Background Elements - HIGH VISIBILITY */
 .bg-orbs {
   position: fixed;
   inset: 0;
@@ -39,14 +39,14 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(140px);
-  opacity: 0.15;
+  opacity: 0.18; /* Increased for better glass refraction */
 }
 
 .orb-1 {
   width: 700px;
   height: 700px;
   background: var(--accent-blue);
-  top: -15%;
+  top: -10%;
   right: -5%;
   animation: float 25s infinite alternate;
 }
@@ -55,18 +55,18 @@ body {
   width: 600px;
   height: 600px;
   background: var(--arc-blue-glow);
-  bottom: -10%;
+  bottom: 0%;
   left: -5%;
   animation: float 20s infinite alternate-reverse;
 }
 
-/* Animated Arcs - High Visibility for Glassmorphism */
+/* Animated Arcs - Visible through glass */
 .bg-arcs {
   position: fixed;
   inset: 0;
-  z-index: -20; /* Deepest layer */
+  z-index: -15;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 0.7;
 }
 
 .arc-line {
@@ -74,14 +74,14 @@ body {
   stroke-dashoffset: 2000;
   animation: slitherArc 12s linear infinite;
   stroke-linecap: round;
-  stroke-width: 1.2px; /* Thicker for visibility */
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+  stroke-width: 1px;
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.8));
   stroke: rgba(255, 255, 255, 0.9);
 }
 
 .snake-head {
   fill: white;
-  filter: blur(2px) drop-shadow(0 0 20px rgba(255, 255, 255, 1));
+  filter: blur(2px) drop-shadow(0 0 15px rgba(255, 255, 255, 1));
 }
 
 @keyframes slitherArc {
@@ -94,24 +94,23 @@ body {
   to { transform: translate(60px, 60px); }
 }
 
-/* TRUE FROSTED GLASS - Crystal Clear but Hazy */
+/* PERFECT GLASSMORPHISM - Based on User Reference */
 .premium-card {
-  @apply rounded-[32px] border border-white/[0.15] transition-all duration-700 relative overflow-hidden;
+  @apply rounded-[32px] transition-all duration-700 relative overflow-hidden;
   
-  /* Very transparent white frosting */
-  background: linear-gradient(
-    135deg, 
-    rgba(255, 255, 255, 0.08) 0%, 
-    rgba(255, 255, 255, 0.02) 100%
-  );
+  /* Very thin white border as in reference */
+  border: 1px solid rgba(255, 255, 255, 0.125);
   
-  /* Refined Blur for motion visibility */
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  /* Subtle white tint background */
+  background: rgba(255, 255, 255, 0.05);
+  
+  /* The Magic: Backdrop Blur */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   
   box-shadow: 
     0 40px 100px -20px rgba(0, 0, 0, 0.8),
-    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
 @media (min-width: 1280px) {
@@ -125,41 +124,23 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% -20%, rgba(255, 255, 255, 0.05), transparent 70%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
   pointer-events: none;
 }
 
-.premium-card:hover, .premium-card:active {
-  @apply border-white/[0.15] bg-white/[0.04];
-  transform: translateY(-2px);
-}
-
 .glass-frame {
-  @apply rounded-[32px] border border-white/[0.12] overflow-hidden transition-all duration-700;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.02);
+  @apply rounded-[32px] overflow-hidden transition-all duration-700;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
 @media (min-width: 1280px) {
   .glass-frame {
-    backdrop-filter: blur(50px);
-    -webkit-backdrop-filter: blur(50px);
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
   }
-}
-
-/* Internal components must also be transparent to not block the main glass */
-.swap-input {
-  @apply bg-transparent border-none p-0 w-full 
-         text-2xl font-bold text-white placeholder-white/10 outline-none;
-}
-
-.nav-link {
-  @apply text-[11px] font-bold text-white/40 transition-all duration-300 relative uppercase tracking-[0.2em];
-}
-
-.nav-link:hover, .nav-link.active {
-  @apply text-white/90;
 }
 
 /* Ticker Animation */
