@@ -3,21 +3,28 @@ import { ArrowDown, Settings, ChevronDown, Wallet, Edit2, RefreshCw } from 'luci
 
 export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlippage: (val: string) => void }) => {
   const [fromAmount, setFromAmount] = useState('10');
-  const [toAmount, setToAmount] = useState('11.748');
+  const [toAmount, setToAmount] = useState('10.74');
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [rate, setRate] = useState(1.1748);
+  const [rate, setRate] = useState(1.0740);
   
-  // Function to simulate fetching live rate
-  const fetchNewRate = () => {
-    // Simulate a small market movement around 1.1748
-    const movement = (Math.random() - 0.5) * 0.005;
-    const newRate = 1.1748 + movement;
-    setRate(parseFloat(newRate.toFixed(4)));
+  // Function to fetch real-time rate from Coinbase API
+  const fetchLiveRate = async () => {
+    try {
+      const response = await fetch('https://api.coinbase.com/v2/prices/EUR-USD/spot');
+      const data = await response.json();
+      if (data && data.data && data.data.amount) {
+        const newRate = parseFloat(data.data.amount);
+        setRate(newRate);
+      }
+    } catch (error) {
+      console.error('Coinbase API Error:', error);
+    }
   };
 
-  // Auto-refresh rate every 60 seconds
+  // Initial fetch and auto-refresh every 60 seconds
   useEffect(() => {
+    fetchLiveRate();
     const interval = setInterval(() => {
       handleRefresh();
     }, 60000);
@@ -32,9 +39,9 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
     }
   }, [fromAmount, rate]);
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    fetchNewRate();
+    await fetchLiveRate();
     setTimeout(() => setIsRefreshing(false), 800);
   };
 
@@ -155,7 +162,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
           >
             <RefreshCw size={10} className={`text-blue-500/60 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span className={isRefreshing ? 'animate-pulse text-white' : ''}>
-              1 mEURC ≈ {rate} mUSDC
+              1 mEURC ≈ {rate.toFixed(4)} mUSDC
             </span>
           </button>
           <div className="flex items-center gap-1 text-[9px] font-bold text-white/20 uppercase tracking-widest">
