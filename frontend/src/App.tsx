@@ -154,28 +154,19 @@ export default function App() {
       <footer className="py-12 px-8 border-t border-white/[0.05] bg-white/[0.01]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-4">
-                <img 
-                  src="/assets/logo-final.png" 
-                  alt="Arc Logo" 
-                  className="w-7 h-7 mix-blend-screen" 
-                  style={{ 
-                    filter: 'contrast(1.5) brightness(1.2)',
-                    maskImage: 'radial-gradient(circle, black 70%, transparent 100%)',
-                    WebkitMaskImage: 'radial-gradient(circle, black 70%, transparent 100%)'
-                  }}
-                />
-                <img 
-                  src="/assets/arcfx-logo-metallic.png" 
-                  alt="ARCFX" 
-                  className="h-9 w-auto mix-blend-screen" 
-                  style={{ 
-                    filter: 'contrast(1.2) brightness(1.1)',
-                  }}
-                />
-              </div>
-            <p className="text-[10px] text-white/30 font-bold max-w-xs uppercase tracking-[0.2em]">
+            <div className="flex items-center gap-6">
+              <img 
+                src="/assets/logo-final.png" 
+                alt="Arc Logo" 
+                className="w-8 h-8 object-contain"
+              />
+              <img 
+                src="/assets/arcfx-logo-metallic.png" 
+                alt="ARCFX" 
+                className="h-9 w-auto object-contain"
+              />
+            </div>
+            <p className="text-[10px] text-white/30 font-bold max-w-xs uppercase tracking-[0.2em] mt-2">
               Institutional Stablecoin Settlement Network
             </p>
           </div>
