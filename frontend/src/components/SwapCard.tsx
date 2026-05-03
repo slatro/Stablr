@@ -69,8 +69,8 @@ export const SwapCard = () => {
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
-        <button className="btn-premium w-full py-5 text-[14px] font-black uppercase tracking-[0.4em] shadow-[0_0_40px_rgba(59,130,246,0.3)]">
-          SWAP
+        <button className="btn-premium w-full py-5 text-[14px] font-black uppercase tracking-[0.4em] shadow-[0_0_40px_rgba(59,130,246,0.3)] h-14">
+          {/* Text removed for minimalist look */}
         </button>
 
         <div className="text-center">
