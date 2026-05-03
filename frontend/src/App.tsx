@@ -8,12 +8,15 @@ import { Zap, Info, Settings, ShieldCheck } from "lucide-react";
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col selection:bg-white/10 relative">
-      {/* Dynamic Background Energy Layer */}
+      {/* Dynamic Background Energy Layer - Snake Paths */}
       <div className="bg-arcs">
-        <svg className="w-full h-full" viewBox="0 0 1000 1000" fill="none">
-          <path className="arc-line" d="M -100 800 Q 300 200, 1100 500" stroke="white" strokeWidth="0.5" style={{ animationDelay: '0s' }} />
-          <path className="arc-line" d="M -200 600 Q 400 900, 1200 300" stroke="white" strokeWidth="0.5" style={{ animationDelay: '3s' }} />
-          <path className="arc-line" d="M 500 -100 Q 200 500, 800 1100" stroke="white" strokeWidth="0.5" style={{ animationDelay: '6s' }} />
+        <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none" fill="none">
+          {/* Master Snake 1 */}
+          <path className="arc-line" d="M -100 200 C 200 100, 400 900, 700 500 S 1200 800, 1500 200" stroke="white" strokeWidth="0.5" style={{ animationDuration: '14s', animationDelay: '0s' }} />
+          {/* Master Snake 2 */}
+          <path className="arc-line" d="M -200 800 C 300 900, 100 100, 500 500 S 900 100, 1200 800" stroke="white" strokeWidth="0.3" style={{ animationDuration: '18s', animationDelay: '4s' }} />
+          {/* Master Snake 3 */}
+          <path className="arc-line" d="M 500 -100 C 200 400, 800 600, 500 1100" stroke="white" strokeWidth="0.4" style={{ animationDuration: '20s', animationDelay: '8s' }} />
         </svg>
       </div>
 

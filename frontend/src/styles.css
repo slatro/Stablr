@@ -38,7 +38,7 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
-  opacity: 0.12;
+  opacity: 0.1;
 }
 
 .orb-1 {
@@ -59,24 +59,25 @@ body {
   animation: float 15s infinite alternate-reverse;
 }
 
-/* Animated Arcs - Snake Effect */
+/* Animated Arcs - Master Snake Effect */
 .bg-arcs {
   position: fixed;
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  opacity: 0.35; /* Increased opacity for visibility */
+  opacity: 0.4;
 }
 
 .arc-line {
-  stroke-dasharray: 300 1200; /* Snake segment size and gap */
-  stroke-dashoffset: 1500;
-  animation: slitherArc 8s linear infinite;
+  stroke-dasharray: 400 1600; /* Snake body length and gap */
+  stroke-dashoffset: 2000;
+  animation: slitherArc 12s linear infinite;
   stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
 
 @keyframes slitherArc {
-  0% { stroke-dashoffset: 1500; }
+  0% { stroke-dashoffset: 2000; }
   100% { stroke-dashoffset: 0; }
 }
 
