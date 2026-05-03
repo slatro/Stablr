@@ -64,9 +64,9 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
   return (
     <div className="flex flex-col gap-2 w-full max-w-[480px]">
       {/* LAYER 1: SIMPLE HEADER */}
-      <div className="premium-card p-2.5 md:p-3 flex items-center justify-between">
-        <h1 className="text-[10px] font-black uppercase tracking-[0.6em] text-blue-400/90 pl-2">Swap</h1>
-        <button className="p-1.5 rounded-xl hover:bg-white/[0.05] transition-all text-white/20 hover:text-white">
+      <div className="premium-card p-2.5 md:p-3 flex items-center justify-center relative">
+        <h1 className="text-[10px] font-black uppercase tracking-[0.6em] text-white pl-2">Swap</h1>
+        <button className="absolute right-3 p-1.5 rounded-xl hover:bg-white/[0.05] transition-all text-white/20 hover:text-white">
           <Settings size={16} />
         </button>
       </div>
@@ -127,7 +127,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
           </div>
         </div>
 
-        <button className="w-full py-2.5 md:py-3 rounded-[18px] bg-blue-600/90 hover:bg-blue-500 text-white font-bold text-sm md:text-base transition-all shadow-[0_4px_20px_rgba(37,99,235,0.2)] active:scale-95 border border-white/10">
+        <button className="w-full py-2.5 md:py-3 rounded-[16px] bg-gradient-to-b from-blue-500 to-blue-700 hover:from-blue-400 hover:to-blue-600 text-white font-bold text-sm md:text-base transition-all shadow-[0_4px_20px_rgba(37,99,235,0.2)] active:scale-95 border border-white/10">
           Swap
         </button>
 
