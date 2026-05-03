@@ -83,7 +83,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
   );
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-[480px]">
+    <div className="flex flex-col gap-2 w-full max-w-[480px]">
       {/* LAYER 1: CENTERED SWAP TITLE */}
       <div className="premium-card p-3.5 md:p-4.5 flex items-center justify-center relative">
         <h1 className="text-base md:text-lg font-black uppercase tracking-[0.4em] text-white pl-2 text-shadow-premium">
