@@ -93,13 +93,9 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
             />
             <div className="text-[9px] font-medium text-white/10">~{finalUsdValue} USD</div>
           </div>
-        </div>
-      </div>
-    );
+    refetchReserves();
+    setTimeout(() => setIsRefreshing(false), 1000);
   };
-
-  const fromToken = isSwapped ? { symbol: 'mUSDC', name: 'Arc Dollar', color: 'bg-emerald-500' } : { symbol: 'mEURC', name: 'Arc Euro', color: 'bg-blue-600' };
-  const toToken = isSwapped ? { symbol: 'mEURC', name: 'Arc Euro', color: 'bg-blue-600' } : { symbol: 'mUSDC', name: 'Arc Dollar', color: 'bg-emerald-500' };
 
   return (
     <div className="flex flex-col h-[506px] w-full max-w-[480px] justify-between">
@@ -111,58 +107,85 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
         </button>
       </div>
 
-      {/* INPUT CARD */}
-      <div className="premium-card p-4 md:p-5 flex-1 flex flex-col justify-center relative mx-0 my-[5px]">
-        <TokenBox type="From" symbol={fromToken.symbol} name={fromToken.name} amount={fromAmount} setAmount={setFromAmount} iconColor={fromToken.color} isReadOnly={false} />
-        
-        <div className="relative h-1 flex items-center justify-center my-3">
-          <div className="absolute inset-x-0 h-px bg-white/[0.04]" />
-          <button 
-            onClick={handleSwapTokens}
-            className="z-10 w-7 h-7 rounded-full bg-[#0a0a0c] border border-white/[0.12] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl group/swap"
-            style={{ color: '#FDF5E6' }}
-          >
-            <ArrowUpDown size={12} className="group-hover/swap:rotate-180 transition-transform duration-500" />
-          </button>
-        </div>
-
-        <TokenBox type="To" symbol={toToken.symbol} name={toToken.name} amount={toAmount} setAmount={setToAmount} iconColor={toToken.color} isReadOnly={true} />
-      </div>
-
-      {/* FOOTER ACTION CARD */}
-      <div className="premium-card p-3.5 md:p-4 flex flex-col gap-3 shrink-0">
-        <div className="flex justify-between items-center px-1">
-          <span className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em]">Slippage Tolerance</span>
-          <div 
-            onClick={() => setIsEditingSlippage(true)}
-            className="flex items-center gap-2 bg-[#FDF5E6]/5 border border-[#FDF5E6]/10 px-2.5 py-1 rounded-xl cursor-pointer hover:bg-[#FDF5E6]/10 transition-all"
-          >
-            {isEditingSlippage ? (
-              <input 
-                autoFocus
-                type="number"
-                value={slippage}
-                onChange={(e) => setSlippage(e.target.value)}
-                onBlur={() => setIsEditingSlippage(false)}
-                className="bg-transparent text-[9px] font-black w-8 outline-none"
-                style={{ color: '#FDF5E6' }}
-              />
-            ) : (
-              <span className="text-[9px] font-black" style={{ color: '#FDF5E6' }}>{slippage}%</span>
-            )}
-            <Edit2 size={8} style={{ color: '#FDF5E6', opacity: 0.6 }} />
+      {/* INPUT SECTION */}
+      <div className="flex-1 flex flex-col gap-2 my-[5px]">
+        {/* FROM */}
+        <div className="premium-card p-4 md:p-6 flex-1 flex flex-col justify-center group hover:border-blue-500/20 transition-all">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">You Sell</span>
+            <div className="flex items-center gap-2 text-[10px] font-bold text-white/40">
+              <Wallet size={10} />
+              <span>Balance: {fromBalance ? Number(formatUnits(fromBalance as bigint, fromToken.decimals)).toFixed(2) : "0.00"}</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center gap-4">
+            <input 
+              type="number" 
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00" 
+              className="bg-transparent text-2xl md:text-4xl font-black text-white outline-none w-full placeholder:text-white/5"
+            />
+            <button className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] transition-all group/btn">
+              <img src={fromToken.icon} alt={fromToken.symbol} className="w-6 h-6 rounded-full" />
+              <span className="font-black text-sm">{fromToken.symbol}</span>
+              <ChevronDown size={14} className="text-white/20 group-hover/btn:text-white" />
+            </button>
           </div>
         </div>
 
-        <button className="w-full py-2 md:py-2.5 rounded-[12px] bg-gradient-to-b from-blue-600 to-[#111827] hover:from-blue-500 hover:to-[#1f2937] text-white font-black text-sm md:text-base transition-all shadow-xl active:scale-95 text-shadow-premium">
-          Swap
+        {/* SWITCH BUTTON */}
+        <div className="relative h-2 flex items-center justify-center z-10">
+          <button 
+            onClick={handleSwitch}
+            className="absolute p-2.5 rounded-xl bg-[#111827] border-4 border-[#0a0a0a] text-blue-500 hover:text-white transition-all shadow-xl hover:scale-110 active:rotate-180 duration-500"
+          >
+            <ArrowUpDown size={16} strokeWidth={3} />
+          </button>
+        </div>
+
+        {/* TO */}
+        <div className="premium-card p-4 md:p-6 flex-1 flex flex-col justify-center group hover:border-emerald-500/20 transition-all">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">You Buy</span>
+            <div className="flex items-center gap-2 text-[10px] font-bold text-white/40">
+              <Wallet size={10} />
+              <span>Balance: {toBalance ? Number(formatUnits(toBalance as bigint, toToken.decimals)).toFixed(2) : "0.00"}</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center gap-4">
+            <div className="text-2xl md:text-4xl font-black text-white/90">
+              {quote}
+            </div>
+            <button className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] transition-all group/btn">
+              <img src={toToken.icon} alt={toToken.symbol} className="w-6 h-6 rounded-full" />
+              <span className="font-black text-sm">{toToken.symbol}</span>
+              <ChevronDown size={14} className="text-white/20 group-hover/btn:text-white" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER CARD */}
+      <div className="premium-card p-4 flex flex-col gap-4 shrink-0">
+        <div className="flex justify-between items-center px-2">
+          <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Price Impact</span>
+          <span className="text-[10px] font-black text-emerald-500 tracking-widest">&lt; 0.01%</span>
+        </div>
+
+        <button 
+          onClick={handleSwap}
+          disabled={!isConnected || !amount || isSwapping}
+          className="w-full py-2 md:py-2.5 rounded-[12px] bg-gradient-to-b from-blue-600 to-[#111827] hover:from-blue-500 hover:to-[#1f2937] text-white font-black text-sm md:text-base transition-all shadow-xl active:scale-95 text-shadow-premium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSwapping ? "Swapping..." : isConnected ? "Swap" : "Connect Wallet"}
         </button>
 
         <div className="flex justify-between items-center px-2">
           <button onClick={handleRefresh} className="flex items-center gap-1.5 text-[9px] font-bold text-white/20 tracking-tight hover:text-blue-400 transition-colors">
             <RefreshCw size={10} className={`text-blue-500/60 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span className={isRefreshing ? 'animate-pulse text-white' : ''}>
-              1 {fromToken.symbol} ≈ {isSwapped ? (1/rate).toFixed(4) : rate.toFixed(4)} {toToken.symbol}
+              1 {fromToken.symbol} ≈ {rate.toFixed(4)} {toToken.symbol}
             </span>
           </button>
           <div className="flex items-center gap-1 text-[9px] font-bold text-white/20 uppercase tracking-widest">
