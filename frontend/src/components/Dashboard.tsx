@@ -7,11 +7,11 @@ import { CONTRACT_ADDRESSES } from '../config/contracts';
 import ERC20_ABI from '../abis/ERC20.json';
 
 const TOKEN_ICONS: Record<string, string> = {
-  mUSDC: '/tokens/usdc.png',
-  mEURC: '/tokens/eurc.png',
-  mTRYC: '/tokens/tryc.png',
-  mGBPC: '/tokens/gbpc.png',
-  mJPYC: '/tokens/jpyc.png',
+  mUSDC: '/stable_logos/usdc.png',
+  mEURC: '/stable_logos/eurc.png',
+  mTRYC: '/stable_logos/tryc.png',
+  mGBPC: '/stable_logos/gbpc.png',
+  mJPYC: '/stable_logos/jpyc.png',
 };
 
 export const Dashboard = () => {
