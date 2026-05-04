@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ArrowUpDown, Settings, ChevronDown, Wallet, Edit2, RefreshCw } from 'lucide-react';
 
 /* 
-  ARCFX TERMINAL - FINAL SEAL v2.3
-  - Fix: Corrected 'ArrowUpDown' import (removed 's') to resolve Vercel build failure.
-  - Theme: Imperial Cream (#FDF5E6) with synchronized 518px chart baseline.
+  ARCFX TERMINAL - FINAL SEAL v2.4
+  - Implementation: Tightened vertical baseline for 506px chart alignment.
+  - Theme: Imperial Cream (#FDF5E6) with dynamic Token Swap logic.
 */
 
 export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlippage: (val: string) => void }) => {
@@ -57,7 +57,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
     const finalUsdValue = symbol === 'mEURC' ? (parseFloat(amount || '0') * rate).toFixed(2) : (parseFloat(amount || '0') * 1.0).toFixed(2);
 
     return (
-      <div className="flex flex-col gap-1.5 mb-2.5">
+      <div className="flex flex-col gap-1 mb-2">
         <div className="flex justify-between items-center px-1">
           <div className="flex items-center gap-2 text-[9px] font-bold text-white/30 uppercase tracking-wider">
             <Wallet size={10} style={{ color: '#FDF5E6' }} />
@@ -68,7 +68,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
           </div>
         </div>
         
-        <div className="bg-white/10 border border-white/[0.12] backdrop-blur-md rounded-[12px] p-3 md:p-3.5 flex items-center justify-between hover:bg-white/[0.15] transition-all group">
+        <div className="bg-white/10 border border-white/[0.12] backdrop-blur-md rounded-[12px] p-2.5 md:p-3 flex items-center justify-between hover:bg-white/[0.15] transition-all group">
           <button className="flex items-center gap-3 px-2 py-0.5 rounded-[12px] hover:bg-white/5 transition-all">
             <div className={`w-7 h-7 rounded-full ${iconColor} flex items-center justify-center shadow-lg shadow-black/20`}>
               <div className="w-3.5 h-3.5 rounded-full border-2 border-white/20" />
@@ -101,32 +101,32 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
   const toToken = isSwapped ? { symbol: 'mEURC', name: 'Arc Euro', color: 'bg-blue-600' } : { symbol: 'mUSDC', name: 'Arc Dollar', color: 'bg-emerald-500' };
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-[480px]">
-      <div className="premium-card p-3.5 md:p-4.5 flex items-center justify-center relative">
+    <div className="flex flex-col gap-2.5 w-full max-w-[480px]">
+      <div className="premium-card p-3 md:p-4 flex items-center justify-center relative">
         <h1 className="text-base md:text-lg font-black uppercase tracking-[0.4em] text-white pl-2 text-shadow-premium">Swap</h1>
         <button className="absolute right-4 p-1.5 rounded-xl hover:bg-white/[0.05] transition-all text-white/20 hover:text-white">
           <Settings size={18} />
         </button>
       </div>
 
-      <div className="premium-card p-4 md:p-6 flex flex-col relative">
+      <div className="premium-card p-3.5 md:p-5 flex flex-col relative">
         <TokenBox type="From" symbol={fromToken.symbol} name={fromToken.name} amount={fromAmount} setAmount={setFromAmount} iconColor={fromToken.color} isReadOnly={false} />
         
-        <div className="relative h-1 flex items-center justify-center my-4 md:my-5">
+        <div className="relative h-1 flex items-center justify-center my-2 md:my-3">
           <div className="absolute inset-x-0 h-px bg-white/[0.04]" />
           <button 
             onClick={handleSwapTokens}
             className="z-10 w-7 h-7 rounded-full bg-[#0a0a0c] border border-white/[0.12] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl group/swap"
             style={{ color: '#FDF5E6' }}
           >
-            <ArrowUpDown size={12} className="group-hover/swap:rotate-180 transition-transform duration-500" />
+            <ArrowUpDown size={11} className="group-hover/swap:rotate-180 transition-transform duration-500" />
           </button>
         </div>
 
         <TokenBox type="To" symbol={toToken.symbol} name={toToken.name} amount={toAmount} setAmount={setToAmount} iconColor={toToken.color} isReadOnly={true} />
       </div>
 
-      <div className="premium-card p-3.5 md:p-4.5 flex flex-col gap-3">
+      <div className="premium-card p-3 md:p-4 flex flex-col gap-2.5">
         <div className="flex justify-between items-center px-1">
           <span className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em]">Slippage Tolerance</span>
           <div 
