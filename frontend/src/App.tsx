@@ -86,7 +86,7 @@ export default function App() {
 
         <div className="w-full max-w-[1600px] mt-8 md:mt-12 overflow-hidden">
           <div className="flex items-center justify-between mb-4 px-4">
-            <h2 className="text-sm md:text-lg font-bold tracking-tight">Ecosystem Activity</h2>
+            <h2 className="text-sm md:text-lg font-bold tracking-tight">Platform Activity</h2>
             <div className="h-px flex-1 bg-white/[0.05] mx-4 md:mx-8" />
             <button className="text-[9px] md:text-[10px] font-bold text-blue-400 hover:text-white transition-colors uppercase tracking-widest">Scan Explorer</button>
           </div>
