@@ -5,6 +5,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { formatUnits } from 'viem';
 import { CONTRACT_ADDRESSES } from '../config/contracts';
 import ERC20_ABI from '../abis/ERC20.json';
+import FAUCET_ABI from '../abis/MultiFaucet.json';
 
 const TOKEN_ICONS: Record<string, string> = {
   mUSDC: '/stable_logos/usdc.png',
@@ -58,9 +59,9 @@ export const Dashboard = () => {
     query: { enabled: !!address }
   });
 
-  // 2. Faucet Writes
-  const { data: mintHash, writeContract: mintWrite, isPending: isMintPending } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: mintHash });
+  // 2. MultiFaucet Claim
+  const { data: claimHash, writeContract: claimWrite, isPending: isClaimPending } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash: claimHash });
 
   React.useEffect(() => {
     if (isConfirmed) {
@@ -70,22 +71,11 @@ export const Dashboard = () => {
 
   const handleFaucet = async () => {
     if (!address) return;
-    const tokens = [
-      { addr: CONTRACT_ADDRESSES.mUSDC, dec: 6 },
-      { addr: CONTRACT_ADDRESSES.mEURC, dec: 18 },
-      { addr: CONTRACT_ADDRESSES.mTRYC, dec: 18 },
-      { addr: CONTRACT_ADDRESSES.mGBPC, dec: 18 },
-      { addr: CONTRACT_ADDRESSES.mJPYC, dec: 18 },
-    ];
-
-    for (const token of tokens) {
-      mintWrite({
-        address: token.addr as `0x${string}`,
-        abi: ERC20_ABI,
-        functionName: 'mint',
-        args: [address, BigInt(10000 * 10**token.dec)],
-      });
-    }
+    claimWrite({
+      address: (CONTRACT_ADDRESSES as any).FAUCET as `0x${string}`,
+      abi: FAUCET_ABI,
+      functionName: 'claim',
+    });
   };
 
   const addTokenToWallet = async (address: string, symbol: string, decimals: number) => {
@@ -93,7 +83,7 @@ export const Dashboard = () => {
       if (!(window as any).ethereum) return;
       await (window as any).ethereum.request({
         method: 'wallet_watchAsset',
-        params: { type: 'ERC20', options: { address, symbol, decimals, image: TOKEN_ICONS[symbol] } },
+        params: { type: 'ERC20', options: { address, symbol, decimals, image: `${window.location.origin}${TOKEN_ICONS[symbol]}` } },
       });
     } catch (error) { console.error(error); }
   };
@@ -106,8 +96,8 @@ export const Dashboard = () => {
             <Wallet size={16} className="text-blue-400" />
             <h3 className="text-[11px] font-bold text-white uppercase tracking-widest">My Assets</h3>
           </div>
-          <button onClick={handleFaucet} disabled={isMintPending || isConfirming || !isConnected} className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-all text-[9px] font-bold uppercase tracking-widest disabled:opacity-20">
-            {isMintPending || isConfirming ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
+          <button onClick={handleFaucet} disabled={isClaimPending || isConfirming || !isConnected} className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-all text-[9px] font-bold uppercase tracking-widest disabled:opacity-20">
+            {isClaimPending || isConfirming ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
             Get Test Tokens
           </button>
         </div>
