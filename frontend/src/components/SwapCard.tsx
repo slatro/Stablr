@@ -100,7 +100,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
         ? (amountOutRaw as bigint) * BigInt(Math.floor((100 - parseFloat(slippage)) * 100)) / 10000n
         : 0n;
 
-      writeContract({
+      swapWrite({
         address: CONTRACT_ADDRESSES.AMM as `0x${string}`,
         abi: AMM_ABI,
         functionName: 'swap',

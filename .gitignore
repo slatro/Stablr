@@ -21,3 +21,8 @@ typechain-types
 # OS files
 .DS_Store
 Thumbs.db
+
+# TypeScript / Vite build info
+*.tsbuildinfo
+frontend/vite.config.d.ts
+frontend/vite.config.js

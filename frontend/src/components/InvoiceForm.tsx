@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Calculator, Save, FileText, Package, Hash, DollarSign } from 'lucide-react';
+import { Plus, Trash2, Calculator, Save, FileText, Package, Hash, DollarSign, ChevronDown } from 'lucide-react';
 
 interface LineItem {
   id: string;
