@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowsUpDown, Settings, ChevronDown, Wallet, Edit2, RefreshCw } from 'lucide-react';
+import { ArrowUpDown, Settings, ChevronDown, Wallet, Edit2, RefreshCw } from 'lucide-react';
 
 /* 
-  ARCFX TERMINAL - FINAL SEAL v2.2
-  - Implementation: Imperial Cream Theme (#FDF5E6) & Functional Dual-Arrow Swap
-  - Visual: Hard-coded colors to bypass caching, synchronized 518px chart alignment.
+  ARCFX TERMINAL - FINAL SEAL v2.3
+  - Fix: Corrected 'ArrowUpDown' import (removed 's') to resolve Vercel build failure.
+  - Theme: Imperial Cream (#FDF5E6) with synchronized 518px chart baseline.
 */
 
 export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlippage: (val: string) => void }) => {
@@ -119,7 +119,7 @@ export const SwapCard = ({ slippage, setSlippage }: { slippage: string, setSlipp
             className="z-10 w-7 h-7 rounded-full bg-[#0a0a0c] border border-white/[0.12] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl group/swap"
             style={{ color: '#FDF5E6' }}
           >
-            <ArrowsUpDown size={12} className="group-hover/swap:rotate-180 transition-transform duration-500" />
+            <ArrowUpDown size={12} className="group-hover/swap:rotate-180 transition-transform duration-500" />
           </button>
         </div>
 

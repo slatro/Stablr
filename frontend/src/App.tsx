@@ -5,7 +5,7 @@ import { TradingViewChart as PriceChart } from "./components/PriceChart";
 import { TransactionPanel } from "./components/TransactionPanel";
 import { Logo } from "./components/Logo";
 import { ActivityTicker } from "./components/ActivityTicker";
-import { Zap, Edit2, ShieldCheck, Wallet } from "lucide-react";
+import { Zap } from "lucide-react";
 
 export default function App() {
   const [slippage, setSlippage] = useState('3.00');
