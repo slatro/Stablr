@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { SwapCard } from './components/SwapCard';
 import { Dashboard } from './components/Dashboard';
+import { Logo } from './components/Logo';
 import { useAccount } from 'wagmi';
 
 function App() {
