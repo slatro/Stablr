@@ -38,7 +38,6 @@ export const ProfileModal = ({ isOpen, onClose, selectedAvatar, setSelectedAvata
   const { disconnect } = useDisconnect();
   const [copied, setCopied] = useState(false);
 
-  // Read all balances
   const { data: balanceUSDC } = useReadContract({ address: CONTRACT_ADDRESSES.mUSDC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined });
   const { data: balanceEURC } = useReadContract({ address: CONTRACT_ADDRESSES.mEURC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined });
   const { data: balanceTRYC } = useReadContract({ address: CONTRACT_ADDRESSES.mTRYC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined });
@@ -67,10 +66,10 @@ export const ProfileModal = ({ isOpen, onClose, selectedAvatar, setSelectedAvata
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
       
-      <div className="relative w-full max-w-md premium-card overflow-hidden animate-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-md premium-card overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500" />
         
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto custom-scrollbar">
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
@@ -122,9 +121,9 @@ export const ProfileModal = ({ isOpen, onClose, selectedAvatar, setSelectedAvata
 
           <div className="space-y-2 mb-6">
             <h3 className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] ml-1 mb-2">My Balances</h3>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-2 max-h-[240px] overflow-y-auto pr-2 custom-scrollbar">
               {balances.map((token) => (
-                <div key={token.symbol} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/[0.08] transition-all">
+                <div key={token.symbol} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/[0.08] transition-all shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full overflow-hidden bg-black/20 p-1">
                       <img src={TOKEN_ICONS[token.symbol]} alt={token.symbol} className="w-full h-full object-contain" />
