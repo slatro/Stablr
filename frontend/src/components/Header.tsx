@@ -1,19 +1,23 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 import { Wallet, ChevronDown, Menu, Activity, Globe, Zap } from 'lucide-react';
 import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi';
 import { Logo } from './Logo';
 
-export const Header = () => {
+interface HeaderProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+}
+
+export const Header = ({ activeTab, setActiveTab }: HeaderProps) => {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { data: balance } = useBalance({ address });
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Swap', path: '/swap' },
-    { label: 'Pools', path: '/pools' },
+    { label: 'Dashboard', id: 'dashboard' },
+    { label: 'Swap', id: 'swap' },
+    { label: 'Pools', id: 'pools' },
   ];
 
   return (
@@ -22,25 +26,23 @@ export const Header = () => {
         
         {/* Logo Section */}
         <div className="flex items-center gap-10">
-          <NavLink to="/">
+          <button onClick={() => setActiveTab('dashboard')}>
             <Logo />
-          </NavLink>
+          </button>
           
           <nav className="hidden md:flex items-center gap-1 bg-black/40 backdrop-blur-2xl border border-white/[0.05] p-1.5 rounded-2xl shadow-2xl">
             {navItems.map((item) => (
-              <NavLink
-                key={item.label}
-                to={item.path}
-                className={({ isActive }) => 
-                  `px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
-                    isActive 
-                      ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
-                      : "text-white/40 hover:text-white hover:bg-white/5"
-                  }`
-                }
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                  activeTab === item.id 
+                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+                    : "text-white/40 hover:text-white hover:bg-white/5"
+                }`}
               >
                 {item.label}
-              </NavLink>
+              </button>
             ))}
           </nav>
         </div>
