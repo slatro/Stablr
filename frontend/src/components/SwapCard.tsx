@@ -7,11 +7,11 @@ import AMM_ABI from '../abis/ArcFXAMM.json';
 import ERC20_ABI from '../abis/ERC20.json';
 
 const TOKEN_ICONS: Record<string, string> = {
-  mUSDC: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/usdc.png',
-  mEURC: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/eur.png',
-  mTRYC: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/try.png',
-  mGBPC: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/gbp.png',
-  mJPYC: 'https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/jpy.png',
+  mUSDC: '/tokens/usdc.png',
+  mEURC: '/tokens/eurc.png',
+  mTRYC: '/tokens/tryc.png',
+  mGBPC: '/tokens/gbpc.png',
+  mJPYC: '/tokens/jpyc.png',
 };
 
 const TOKENS = [
