@@ -57,16 +57,16 @@ export const Header = ({ activeTab = 'swap', setActiveTab }: HeaderProps) => {
           <Logo />
           <nav className="hidden md:flex items-center gap-8">
             <button 
-              onClick={() => setActiveTab?.('swap')}
-              className={`nav-link ${activeTab === 'swap' ? 'active text-white' : 'text-white/40'}`}
-            >
-              Swap
-            </button>
-            <button 
               onClick={() => setActiveTab?.('dashboard')}
               className={`nav-link ${activeTab === 'dashboard' ? 'active text-white' : 'text-white/40'}`}
             >
               Dashboard
+            </button>
+            <button 
+              onClick={() => setActiveTab?.('swap')}
+              className={`nav-link ${activeTab === 'swap' ? 'active text-white' : 'text-white/40'}`}
+            >
+              Swap
             </button>
             <button 
               onClick={() => setActiveTab?.('pools')}
