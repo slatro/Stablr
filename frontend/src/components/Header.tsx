@@ -70,9 +70,8 @@ export const Header = ({ activeTab = 'swap', setActiveTab }: HeaderProps) => {
             </button>
             <button 
               onClick={() => setActiveTab?.('invoices')}
-              className={`nav-link flex items-center gap-2 ${activeTab === 'invoices' ? 'active text-white' : 'text-white/40'}`}
+              className={`nav-link ${activeTab === 'invoices' ? 'active text-white' : 'text-white/40'}`}
             >
-              <ReceiptText size={14} />
               Invoices
             </button>
             <a href="#" className="nav-link text-white/40">Docs</a>
