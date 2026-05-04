@@ -4,9 +4,14 @@ import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import { WalletModal } from './WalletModal';
 import { NetworkInfoModal } from './NetworkInfoModal';
 import { ARC_TESTNET_CONFIG } from '../config/contracts';
-import { Copy, LogOut, Check, ChevronDown } from 'lucide-react';
+import { Copy, LogOut, Check, ChevronDown, ReceiptText } from 'lucide-react';
 
-export const Header = () => {
+interface HeaderProps {
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
+}
+
+export const Header = ({ activeTab = 'swap', setActiveTab }: HeaderProps) => {
   const { address, isConnected, chainId } = useAccount();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
@@ -51,10 +56,26 @@ export const Header = () => {
         <div className="flex items-center gap-12">
           <Logo />
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="nav-link active">Swap</a>
-            <a href="#" className="nav-link">Pools</a>
-            <a href="#" className="nav-link">Stake</a>
-            <a href="#" className="nav-link">Docs</a>
+            <button 
+              onClick={() => setActiveTab?.('swap')}
+              className={`nav-link ${activeTab === 'swap' ? 'active text-white' : 'text-white/40'}`}
+            >
+              Swap
+            </button>
+            <button 
+              onClick={() => setActiveTab?.('pools')}
+              className={`nav-link ${activeTab === 'pools' ? 'active text-white' : 'text-white/40'}`}
+            >
+              Pools
+            </button>
+            <button 
+              onClick={() => setActiveTab?.('invoices')}
+              className={`nav-link flex items-center gap-2 ${activeTab === 'invoices' ? 'active text-white' : 'text-white/40'}`}
+            >
+              <ReceiptText size={14} />
+              Fatura
+            </button>
+            <a href="#" className="nav-link text-white/40">Docs</a>
           </nav>
         </div>
 
@@ -95,29 +116,29 @@ export const Header = () => {
 
             {/* Account Info Box */}
             {isAccountBoxOpen && isConnected && (
-              <div className="absolute top-[calc(100%+12px)] right-0 w-48 bg-[#0a0a0b] border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-top-2 duration-300 z-[100] backdrop-blur-2xl overflow-hidden">
-                <div className="p-3 flex flex-col gap-3">
-                  <div className="px-1 py-0.5 flex items-center justify-between border-b border-white/5 pb-2">
-                    <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Active Account</span>
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                  </div>
-                  
-                  <div className="flex items-center justify-between px-2.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
-                    <span className="text-[10px] font-mono text-white/80">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
-                    <button 
-                      onClick={handleCopy}
-                      className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
-                      title="Copy Address"
-                    >
-                      {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
-                    </button>
+              <div className="absolute top-[calc(100%+12px)] right-0 w-44 bg-[#0a0a0b] border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] animate-in fade-in slide-in-from-top-2 duration-300 z-[100] backdrop-blur-2xl overflow-hidden">
+                <div className="flex flex-col">
+                  <div className="p-4 border-b border-white/5 bg-white/[0.02]">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest">Connected</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-[10px] font-mono text-white/80 truncate">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
+                      <button 
+                        onClick={handleCopy}
+                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all shrink-0"
+                      >
+                        {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                      </button>
+                    </div>
                   </div>
 
                   <button 
                     onClick={handleLogout}
-                    className="w-full py-2 flex items-center justify-center gap-2 rounded-xl bg-white/[0.02] hover:bg-red-500/10 text-white/40 hover:text-red-400 transition-all border border-white/5 text-[9px] font-bold uppercase tracking-widest"
+                    className="w-full p-4 flex items-center gap-3 hover:bg-red-500/5 text-white/40 hover:text-red-400 transition-all text-[9px] font-bold uppercase tracking-[0.2em]"
                   >
-                    <LogOut size={12} />
+                    <LogOut size={14} />
                     Sign Out
                   </button>
                 </div>

@@ -1,11 +1,12 @@
-// Vercel Rebuild Trigger - ArcFX Deployment Sync - TS: 2026-05-04 04:44
-import React, { useState, useEffect } from "react";
+// Vercel Rebuild Trigger - ArcFX Deployment Sync - TS: 2026-05-04 05:05
+import React, { useState } from "react";
 import { Header } from "./components/Header";
 import { SwapCard } from "./components/SwapCard";
 import { TradingViewChart as PriceChart } from "./components/PriceChart";
 import { TransactionPanel } from "./components/TransactionPanel";
 import { Logo } from "./components/Logo";
 import { ActivityTicker } from "./components/ActivityTicker";
+import { InvoiceForm } from "./components/InvoiceForm";
 import { Zap } from "lucide-react";
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,6 +16,7 @@ const queryClient = new QueryClient();
 
 export default function App() {
   const [slippage, setSlippage] = useState('3.00');
+  const [activeTab, setActiveTab] = useState('swap');
 
   return (
     <WagmiProvider config={config}>
@@ -32,7 +34,7 @@ export default function App() {
         <div className="orb orb-2" />
       </div>
       
-      <Header />
+      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
       
       <div className="bg-white/[0.02] border-b border-white/[0.05] py-2 px-4 md:px-6 relative overflow-hidden">
         <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4 md:gap-8">
@@ -54,50 +56,60 @@ export default function App() {
       </div>
 
       <main className="flex-1 flex flex-col items-center relative py-4 md:py-8 px-4 md:px-6">
-        <div className="w-full max-w-[1600px] grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-6 md:gap-8 items-stretch">
-          
-          <div className="flex flex-col items-center gap-4 order-1 xl:order-2">
-            <SwapCard slippage={slippage} setSlippage={setSlippage} />
-            <a 
-              href="https://faucet.circle.com/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-1.5 mt-[9px] rounded-xl bg-blue-500/5 border border-blue-500/20 hover:bg-blue-500/10 transition-all cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.15)] group"
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-              <span className="text-[9px] font-bold text-blue-400/80 uppercase tracking-widest group-hover:text-blue-400 transition-colors">Faucet</span>
-            </a>
-          </div>
-
-          <div className="flex flex-col gap-4 order-2 xl:order-1">
-            <div className="glass-frame h-[500px] xl:h-[500px] my-[3px]">
-              <PriceChart />
+        {activeTab === 'swap' ? (
+          <div className="w-full max-w-[1600px] grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-6 md:gap-8 items-stretch animate-in fade-in duration-700">
+            
+            <div className="flex flex-col items-center gap-4 order-1 xl:order-2">
+              <SwapCard slippage={slippage} setSlippage={setSlippage} />
+              <a 
+                href="https://faucet.circle.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-1.5 mt-[9px] rounded-xl bg-blue-500/5 border border-blue-500/20 hover:bg-blue-500/10 transition-all cursor-pointer shadow-[0_0_15px_rgba(59,130,246,0.15)] group"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                <span className="text-[9px] font-bold text-blue-400/80 uppercase tracking-widest group-hover:text-blue-400 transition-colors">Faucet</span>
+              </a>
             </div>
-            <div className="flex items-center gap-4 mt-1 px-2">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                <span className="text-[9px] font-bold text-emerald-400/80 uppercase tracking-widest">Market Live</span>
+
+            <div className="flex flex-col gap-4 order-2 xl:order-1">
+              <div className="glass-frame h-[500px] xl:h-[500px] my-[3px]">
+                <PriceChart />
               </div>
-              <div className="h-4 w-px bg-white/10" />
-              <div className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
-                24h Vol: <span className="text-white/50">$1.42M</span>
-              </div>
-              <div className="flex-1 h-px bg-white/[0.05]" />
-              <div className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
-                Liquidity: <span className="text-white/50">$840K</span>
+              <div className="flex items-center gap-4 mt-1 px-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                  <span className="text-[9px] font-bold text-emerald-400/80 uppercase tracking-widest">Market Live</span>
+                </div>
+                <div className="h-4 w-px bg-white/10" />
+                <div className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
+                  24h Vol: <span className="text-white/50">$1.42M</span>
+                </div>
+                <div className="flex-1 h-px bg-white/[0.05]" />
+                <div className="text-[9px] font-bold text-white/20 uppercase tracking-widest">
+                  Liquidity: <span className="text-white/50">$840K</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="w-full max-w-[1600px] mt-8 md:mt-12 overflow-hidden">
-          <div className="flex items-center justify-between mb-4 px-4">
-            <h2 className="text-sm md:text-lg font-bold tracking-tight">Platform Activity</h2>
-            <div className="h-px flex-1 bg-white/[0.05] mx-4 md:mx-8" />
-            <button className="text-[9px] md:text-[10px] font-bold text-blue-400 hover:text-white transition-colors uppercase tracking-widest">Scan Explorer</button>
+        ) : activeTab === 'invoices' ? (
+          <InvoiceForm />
+        ) : (
+          <div className="flex items-center justify-center h-64 text-white/20 uppercase tracking-[0.5em] font-black italic">
+            Coming Soon
           </div>
-          <TransactionPanel />
-        </div>
+        )}
+
+        {activeTab === 'swap' && (
+          <div className="w-full max-w-[1600px] mt-8 md:mt-12 overflow-hidden">
+            <div className="flex items-center justify-between mb-4 px-4">
+              <h2 className="text-sm md:text-lg font-bold tracking-tight">Platform Activity</h2>
+              <div className="h-px flex-1 bg-white/[0.05] mx-4 md:mx-8" />
+              <button className="text-[9px] md:text-[10px] font-bold text-blue-400 hover:text-white transition-colors uppercase tracking-widest">Scan Explorer</button>
+            </div>
+            <TransactionPanel />
+          </div>
+        )}
       </main>
 
       <footer className="py-12 px-8 border-t border-white/[0.05] bg-white/[0.01]">
