@@ -32,7 +32,13 @@ async function main() {
   await jpyc.waitForDeployment();
   const jpycAddr = await jpyc.getAddress();
 
-  // 2. Deploy AMMs (Pools)
+  // 2. Deploy MultiFaucet
+  const MultiFaucet = await ethers.getContractFactory("MultiFaucet");
+  const faucet = await MultiFaucet.deploy();
+  await faucet.waitForDeployment();
+  const faucetAddr = await faucet.getAddress();
+
+  // 3. Deploy AMMs (Pools)
   const ArcFXAMM = await ethers.getContractFactory("ArcFXAMM");
   
   // Pool 1: USDC/EURC
@@ -55,7 +61,7 @@ async function main() {
   await ammJPY.waitForDeployment();
   const ammJPYAddr = await ammJPY.getAddress();
 
-  // 3. Mint (10M for each)
+  // 4. Initial Mint for Pools
   console.log("Minting tokens...");
   await (await usdc.mint(deployer.address, ethers.parseUnits("10000000", 6))).wait();
   await (await eurc.mint(deployer.address, ethers.parseUnits("10000000", 18))).wait();
@@ -63,30 +69,25 @@ async function main() {
   await (await gbpc.mint(deployer.address, ethers.parseUnits("10000000", 18))).wait();
   await (await jpyc.mint(deployer.address, ethers.parseUnits("10000000", 18))).wait();
 
-  // 4. Initial Liquidity (LIVE MARKET RATES - MAY 4, 2026)
-  console.log("Adding liquidity with LIVE market rates...");
-
-  // EUR Pool (10k USDC / 8.547k EURC) - 1 EUR = 1.17 USD
+  // 5. Initial Liquidity (LIVE MARKET RATES)
+  console.log("Adding liquidity with real market parities...");
   await (await usdc.approve(ammEURAddr, ethers.parseUnits("10000", 6))).wait();
   await (await eurc.approve(ammEURAddr, ethers.parseUnits("8547", 18))).wait();
   await (await ammEUR.addLiquidity(ethers.parseUnits("10000", 6), ethers.parseUnits("8547", 18))).wait();
 
-  // TRYC Pool (10k USDC / 451.4k TRYC) - 1 USD = 45.14 TRY
   await (await usdc.approve(ammTRYAddr, ethers.parseUnits("10000", 6))).wait();
   await (await tryc.approve(ammTRYAddr, ethers.parseUnits("451400", 18))).wait();
   await (await ammTRY.addLiquidity(ethers.parseUnits("10000", 6), ethers.parseUnits("451400", 18))).wait();
 
-  // GBPC Pool (10k USDC / 7.407k GBPC) - 1 GBP = 1.35 USD
   await (await usdc.approve(ammGBPAddr, ethers.parseUnits("10000", 6))).wait();
   await (await gbpc.approve(ammGBPAddr, ethers.parseUnits("7407", 18))).wait();
   await (await ammGBP.addLiquidity(ethers.parseUnits("10000", 6), ethers.parseUnits("7407", 18))).wait();
 
-  // JPYC Pool (10k USDC / 1.5695M JPYC) - 1 USD = 156.95 JPY
   await (await usdc.approve(ammJPYAddr, ethers.parseUnits("10000", 6))).wait();
   await (await jpyc.approve(ammJPYAddr, ethers.parseUnits("1569500", 18))).wait();
   await (await ammJPY.addLiquidity(ethers.parseUnits("10000", 6), ethers.parseUnits("1569500", 18))).wait();
 
-  // 5. Save config
+  // 6. Save config
   const configContent = `
 export const ARC_TESTNET_CONFIG = {
   chainId: 5042002,
@@ -103,7 +104,8 @@ export const CONTRACT_ADDRESSES = {
   mTRYC: "${trycAddr}",
   mGBPC: "${gbpcAddr}",
   mJPYC: "${jpycAddr}",
-  AMM: "${ammEURAddr}", // Default pool
+  MULTI_FAUCET: "${faucetAddr}",
+  AMM: "${ammEURAddr}",
   POOLS: {
     "mEURC": "${ammEURAddr}",
     "mTRYC": "${ammTRYAddr}",
@@ -115,7 +117,7 @@ export const CONTRACT_ADDRESSES = {
 
   const configPath = path.join(__dirname, "../frontend/src/config/contracts.ts");
   fs.writeFileSync(configPath, configContent);
-  console.log("Deployment complete! Rates are officially live from TradingView.");
+  console.log("Deployment complete! MultiFaucet is active.");
 }
 
 main().catch(console.error);

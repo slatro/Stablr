@@ -5,6 +5,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { formatUnits } from 'viem';
 import { CONTRACT_ADDRESSES } from '../config/contracts';
 import ERC20_ABI from '../abis/ERC20.json';
+import FAUCET_ABI from '../abis/MultiFaucet.json';
 
 const TOKEN_ICONS: Record<string, string> = {
   mUSDC: '/stable_logos/usdc.png',
@@ -68,24 +69,30 @@ export const Dashboard = () => {
     }
   }, [isConfirmed]);
 
+
   const handleFaucet = async () => {
     if (!address) return;
     const tokens = [
-      { addr: CONTRACT_ADDRESSES.mUSDC, dec: 6 },
-      { addr: CONTRACT_ADDRESSES.mEURC, dec: 18 },
-      { addr: CONTRACT_ADDRESSES.mTRYC, dec: 18 },
-      { addr: CONTRACT_ADDRESSES.mGBPC, dec: 18 },
-      { addr: CONTRACT_ADDRESSES.mJPYC, dec: 18 },
+      CONTRACT_ADDRESSES.mUSDC,
+      CONTRACT_ADDRESSES.mEURC,
+      CONTRACT_ADDRESSES.mTRYC,
+      CONTRACT_ADDRESSES.mGBPC,
+      CONTRACT_ADDRESSES.mJPYC,
+    ];
+    const amounts = [
+      BigInt(10000 * 10**6),
+      BigInt(10000 * 10**18),
+      BigInt(10000 * 10**18),
+      BigInt(10000 * 10**18),
+      BigInt(10000 * 10**18),
     ];
 
-    for (const token of tokens) {
-      mintWrite({
-        address: token.addr as `0x${string}`,
-        abi: ERC20_ABI,
-        functionName: 'mint',
-        args: [address, BigInt(10000 * 10**token.dec)],
-      });
-    }
+    mintWrite({
+      address: CONTRACT_ADDRESSES.MULTI_FAUCET as `0x${string}`,
+      abi: FAUCET_ABI,
+      functionName: 'getTokens',
+      args: [tokens, amounts, address],
+    });
   };
 
   const addTokenToWallet = async (address: string, symbol: string, decimals: number) => {
