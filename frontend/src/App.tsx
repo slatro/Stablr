@@ -1,4 +1,3 @@
-// Vercel Rebuild Trigger - ArcFX Deployment Sync - TS: 2026-05-04 05:18
 import React, { useState } from "react";
 import { Header } from "./components/Header";
 import { SwapCard } from "./components/SwapCard";
@@ -10,20 +9,21 @@ import { InvoiceForm } from "./components/InvoiceForm";
 import { PoolsPanel } from "./components/PoolsPanel";
 import { Dashboard } from "./components/Dashboard";
 import { Zap } from "lucide-react";
+
+// Web3 Imports
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { config } from './config/wagmi';
 
 const queryClient = new QueryClient();
 
-export default function App() {
+// INNER COMPONENT: Bütün hook'lar burada
+function AppContent() {
   const [slippage, setSlippage] = useState('3.00');
   const [activeTab, setActiveTab] = useState('swap');
 
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen flex flex-col selection:bg-white/10 relative">
+    <div className="min-h-screen flex flex-col selection:bg-white/10 relative">
       <div className="bg-arcs">
         <svg className="w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none" fill="none">
           <path id="snake-path-1" className="arc-line" d="M -100 200 C 200 100, 400 900, 700 500 S 1200 800, 1500 200" stroke="white" strokeWidth="0.6" style={{ animationDuration: '14s' }} />
@@ -36,7 +36,6 @@ export default function App() {
         <div className="orb orb-2" />
       </div>
       
-      {/* HEADER & TICKER NOW FLOW NATURALLY (NOT FIXED) */}
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
       
       <div className="w-full bg-white/[0.02] border-b border-white/[0.05] py-3 px-8 relative overflow-hidden">
@@ -60,11 +59,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col items-center relative py-8 px-4 md:px-6">
         {activeTab === 'swap' ? (
           <div className="w-full max-w-[1600px] grid grid-cols-1 xl:grid-cols-[1fr_460px] gap-6 md:gap-12 items-stretch animate-in fade-in duration-700">
-            
             <div className="flex flex-col items-center gap-4 order-1 xl:order-2">
               <SwapCard slippage={slippage} setSlippage={setSlippage} />
               <div className="h-4" />
@@ -125,7 +122,16 @@ export default function App() {
         </div>
       </footer>
     </div>
-    </QueryClientProvider>
+  );
+}
+
+// OUTER WRAPPER: Sadece Provider'lar
+export default function App() {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
     </WagmiProvider>
   );
 }
