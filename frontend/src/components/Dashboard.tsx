@@ -5,7 +5,6 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { formatUnits } from 'viem';
 import { CONTRACT_ADDRESSES } from '../config/contracts';
 import ERC20_ABI from '../abis/ERC20.json';
-import FAUCET_ABI from '../abis/MultiFaucet.json';
 
 const TOKEN_ICONS: Record<string, string> = {
   mUSDC: '/stable_logos/usdc.png',
@@ -70,30 +69,6 @@ export const Dashboard = () => {
   }, [isConfirmed]);
 
 
-  const handleFaucet = async () => {
-    if (!address) return;
-    const tokens = [
-      CONTRACT_ADDRESSES.mUSDC,
-      CONTRACT_ADDRESSES.mEURC,
-      CONTRACT_ADDRESSES.mTRYC,
-      CONTRACT_ADDRESSES.mGBPC,
-      CONTRACT_ADDRESSES.mJPYC,
-    ];
-    const amounts = [
-      BigInt(10000 * 10**6),
-      BigInt(10000 * 10**18),
-      BigInt(10000 * 10**18),
-      BigInt(10000 * 10**18),
-      BigInt(10000 * 10**18),
-    ];
-
-    mintWrite({
-      address: CONTRACT_ADDRESSES.MULTI_FAUCET as `0x${string}`,
-      abi: FAUCET_ABI,
-      functionName: 'getTokens',
-      args: [tokens, amounts, address],
-    });
-  };
 
   const addTokenToWallet = async (address: string, symbol: string, decimals: number) => {
     try {
@@ -113,10 +88,6 @@ export const Dashboard = () => {
             <Wallet size={16} className="text-blue-400" />
             <h3 className="text-[11px] font-bold text-white uppercase tracking-widest">My Assets</h3>
           </div>
-          <button onClick={handleFaucet} disabled={isMintPending || isConfirming || !isConnected} className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-all text-[9px] font-bold uppercase tracking-widest disabled:opacity-20">
-            {isMintPending || isConfirming ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
-            Get Test Tokens
-          </button>
         </div>
 
         <div className="flex flex-col gap-2">

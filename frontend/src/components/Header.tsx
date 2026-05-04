@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Globe, Menu, ShieldCheck, Wallet, Loader2 } from 'lucide-react';
-import { useAccount, useConnect, useReadContract } from 'wagmi';
+import { ChevronDown, Menu, ShieldCheck, Wallet, Loader2, Zap } from 'lucide-react';
+import { useAccount, useConnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatUnits } from 'viem';
 import { Logo } from './Logo';
 import { ProfileModal, AVATARS } from './ProfileModal';
 import { CONTRACT_ADDRESSES } from '../config/contracts';
 import ERC20_ABI from '../abis/ERC20.json';
+import FAUCET_ABI from '../abis/MultiFaucet.json';
 
 export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (tab: string) => void }) => {
   const { address, isConnected } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(AVATARS[0]);
+
+  // Faucet Logic
+  const { data: mintHash, writeContract: mintWrite, isPending: isMintPending } = useWriteContract();
+  const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash: mintHash });
 
   // Persist avatar selection
   useEffect(() => {
@@ -31,6 +36,31 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
     args: address ? [address] : undefined,
     query: { enabled: !!address }
   });
+
+  const handleFaucet = async () => {
+    if (!address) return;
+    const tokens = [
+      CONTRACT_ADDRESSES.mUSDC,
+      CONTRACT_ADDRESSES.mEURC,
+      CONTRACT_ADDRESSES.mTRYC,
+      CONTRACT_ADDRESSES.mGBPC,
+      CONTRACT_ADDRESSES.mJPYC,
+    ];
+    const amounts = [
+      BigInt(10000 * 10**6),
+      BigInt(10000 * 10**18),
+      BigInt(10000 * 10**18),
+      BigInt(10000 * 10**18),
+      BigInt(10000 * 10**18),
+    ];
+
+    mintWrite({
+      address: CONTRACT_ADDRESSES.MULTI_FAUCET as `0x${string}`,
+      abi: FAUCET_ABI,
+      functionName: 'getTokens',
+      args: [tokens, amounts, address],
+    });
+  };
 
   const formattedBalance = balanceUSDC ? parseFloat(formatUnits(balanceUSDC as bigint, 6)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00';
 
@@ -58,14 +88,27 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
         </div>
 
         <div className="flex items-center gap-4 pointer-events-auto">
-          <div className="hidden lg:flex items-center gap-6 mr-4 opacity-40 hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-              <span className="text-[9px] font-bold text-white uppercase tracking-widest">Network: <span className="text-white/80">Arc Testnet</span></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck size={12} className="text-emerald-500" />
-              <span className="text-[9px] font-bold text-white uppercase tracking-widest">Secure Layer</span>
+          <div className="hidden lg:flex items-center gap-6 mr-4">
+            {/* USDC FAUCET BUTTON */}
+            <button 
+              onClick={handleFaucet}
+              disabled={isMintPending || isConfirming || !isConnected}
+              className="group relative flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-all duration-500 hover:scale-105 active:scale-95 disabled:opacity-20 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.4)]"
+            >
+              <div className="absolute inset-0 bg-blue-400/5 blur-xl group-hover:bg-blue-400/10 transition-all" />
+              {isMintPending || isConfirming ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} className="animate-pulse" />}
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">USDC Faucet</span>
+            </button>
+
+            <div className="flex items-center gap-6 opacity-40 hover:opacity-100 transition-opacity ml-2">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                <span className="text-[9px] font-bold text-white uppercase tracking-widest">Network: <span className="text-white/80">Arc Testnet</span></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={12} className="text-emerald-500" />
+                <span className="text-[9px] font-bold text-white uppercase tracking-widest">Secure Layer</span>
+              </div>
             </div>
           </div>
 
