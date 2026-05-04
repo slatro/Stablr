@@ -8,6 +8,7 @@ import { Logo } from "./components/Logo";
 import { ActivityTicker } from "./components/ActivityTicker";
 import { InvoiceForm } from "./components/InvoiceForm";
 import { PoolsPanel } from "./components/PoolsPanel";
+import { Dashboard } from "./components/Dashboard";
 import { Zap } from "lucide-react";
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -102,6 +103,8 @@ export default function App() {
             Coming Soon
           </div>
         )}
+
+        <Dashboard />
 
         {activeTab === 'swap' && (
           <div className="w-full max-w-[1600px] mt-8 md:mt-12 overflow-hidden">
