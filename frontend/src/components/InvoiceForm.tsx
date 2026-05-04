@@ -70,8 +70,8 @@ export const InvoiceForm = () => {
               <FileText className="text-blue-400" size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight">Fatura Oluştur</h2>
-              <p className="text-[10px] text-white/30 uppercase tracking-widest font-bold">Yeni Fatura Detayları</p>
+              <h2 className="text-lg font-bold text-white tracking-tight">Create Invoice</h2>
+              <p className="text-[10px] text-white/30 uppercase tracking-widest font-bold">New Invoice Details</p>
             </div>
           </div>
           <div className="text-right">
@@ -84,7 +84,7 @@ export const InvoiceForm = () => {
           {items.map((item, index) => (
             <div key={item.id} className="grid grid-cols-12 gap-4 items-end bg-white/[0.02] p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-all group">
               <div className="col-span-5">
-                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Ürün / Hizmet</label>
+                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Product / Service</label>
                 <div className="relative">
                   <Package size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
                   <select
@@ -92,7 +92,7 @@ export const InvoiceForm = () => {
                     onChange={(e) => updateItem(item.id, 'productId', e.target.value)}
                     className="w-full bg-[#0a0a0b] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium text-white/80 focus:border-blue-500/50 outline-none transition-all appearance-none cursor-pointer"
                   >
-                    <option value="">Ürün Seçin...</option>
+                    <option value="">Select Product...</option>
                     {MOCK_PRODUCTS.map(p => (
                       <option key={p.id} value={p.id}>{p.name}</option>
                     ))}
@@ -102,7 +102,7 @@ export const InvoiceForm = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Miktar</label>
+                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Quantity</label>
                 <div className="relative">
                   <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
                   <input
@@ -115,7 +115,7 @@ export const InvoiceForm = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Birim Fiyat</label>
+                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Unit Price</label>
                 <div className="relative">
                   <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
                   <input
@@ -128,7 +128,7 @@ export const InvoiceForm = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Toplam</label>
+                <label className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-2 block ml-1">Total</label>
                 <div className="w-full bg-white/[0.03] border border-transparent rounded-xl py-2.5 px-4 text-xs font-bold text-white/60">
                   ${item.total.toLocaleString()}
                 </div>
@@ -152,12 +152,12 @@ export const InvoiceForm = () => {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-all text-[10px] font-bold uppercase tracking-widest"
           >
             <Plus size={14} />
-            Yeni Satır Ekle
+            Add New Line
           </button>
 
           <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white text-black hover:bg-white/90 transition-all text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl shadow-white/5">
             <Save size={14} />
-            Faturayı Kaydet
+            Save Invoice
           </button>
         </div>
       </div>

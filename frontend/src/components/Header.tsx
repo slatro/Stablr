@@ -73,7 +73,7 @@ export const Header = ({ activeTab = 'swap', setActiveTab }: HeaderProps) => {
               className={`nav-link flex items-center gap-2 ${activeTab === 'invoices' ? 'active text-white' : 'text-white/40'}`}
             >
               <ReceiptText size={14} />
-              Fatura
+              Invoices
             </button>
             <a href="#" className="nav-link text-white/40">Docs</a>
           </nav>
