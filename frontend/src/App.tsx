@@ -89,7 +89,7 @@ export default function App() {
               {renderContent()}
               
               {/* GLOBAL TRANSACTION HISTORY & LIMIT ORDERS - Always mounted to listen for events */}
-              <div className={`mt-12 space-y-12 ${activeTab === 'dashboard' ? 'hidden' : 'block'}`}>
+              <div className={`mt-12 space-y-12 ${activeTab === 'swap' ? 'block' : 'hidden'}`}>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                    <LimitOrders />
                    <TransactionHistory />
