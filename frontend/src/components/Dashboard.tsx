@@ -418,7 +418,7 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
 
   const [snapshotCountdown, setSnapshotCountdown] = React.useState('');
 
-  const { writeContract: settlePoints } = useWriteContract();
+  const { writeContract: settlePointsOnChain } = useWriteContract();
   const { writeContract: checkInWrite, data: checkInHash, isPending: isCheckingIn } = useWriteContract();
   const { isLoading: isCheckInConfirming, isSuccess: isCheckInSuccess } = useWaitForTransactionReceipt({ hash: checkInHash });
 
@@ -449,7 +449,7 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
       const diff = Number(nextSnapshot) - now;
       if (diff <= 0) {
         if (pendingPoints > 0) {
-          settlePoints({
+          settlePointsOnChain({
             address: CONTRACT_ADDRESSES.ARC_POINTS as `0x${string}`,
             abi: POINTS_ABI.abi || POINTS_ABI,
             functionName: 'recordActivity',
@@ -467,7 +467,7 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
       setSnapshotCountdown(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
     }, 1000);
     return () => clearInterval(timer);
-  }, [nextSnapshot, refetchSnapshot, pendingPoints, notify, address]);
+  }, [nextSnapshot, refetchSnapshot, pendingPoints, notify, address, settlePointsOnChain]);
 
 
   // Prepare assets for the chart
