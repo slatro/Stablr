@@ -284,7 +284,7 @@ export const TradingChart = ({ tokenIn, tokenOut }: { tokenIn: any; tokenOut: an
           </div>
         </div>
 
-        <div className="relative flex-1 overflow-hidden bg-[#0d0e12]">
+        <div className="relative flex-1 overflow-hidden bg-transparent">
           <div className={`absolute inset-0 ${isUp ? 'bg-[radial-gradient(circle_at_50%_0%,rgba(52,211,153,0.05),transparent_70%)]' : 'bg-[radial-gradient(circle_at_50%_0%,rgba(248,113,113,0.05),transparent_70%)]'}`} />
           <div className="absolute inset-0 bg-grid-white/[0.01]" />
           
