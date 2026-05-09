@@ -202,9 +202,15 @@ export const TradingChart = ({ tokenIn, tokenOut }: { tokenIn: any; tokenOut: an
   const gridEndTs = nextBoundary;
 
   const displayPrices = history.map(d => d.price);
-  const maxP = Math.max(...(displayPrices.length ? displayPrices : [1])) * 1.0003;
-  const minP = Math.min(...(displayPrices.length ? displayPrices : [1])) * 0.9997;
-  const rangeP = Math.max(maxP - minP, maxP * 0.00001);
+  const rawMax = Math.max(...(displayPrices.length ? displayPrices : [1]));
+  const rawMin = Math.min(...(displayPrices.length ? displayPrices : [1]));
+  const rawRange = rawMax - rawMin;
+  
+  // Add 15% padding top and bottom to keep the line centered and away from edges
+  const padding = rawRange > 0 ? rawRange * 0.15 : rawMax * 0.001;
+  const maxP = rawMax + padding;
+  const minP = rawMin - padding;
+  const rangeP = maxP - minP;
 
   const pts = useMemo(() => {
     if (history.length === 0) return [];
