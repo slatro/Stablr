@@ -117,36 +117,52 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
 
   return (
     <>
-      <header className="w-full min-h-[76px] flex items-center z-50 border-b border-white/[0.03] backdrop-blur-md sticky top-0">
-        <div className="w-full px-4 md:px-8 py-3 md:py-0 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center justify-between w-full md:w-auto gap-2 md:gap-10">
+      <header className="w-full z-50 border-b border-white/[0.03] backdrop-blur-md sticky top-0 bg-[#030303]/80">
+        <div className="w-full px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 py-2 md:py-0 min-h-[80px] md:min-h-[76px]">
+          {/* TOP ROW: LOGO & WALLET ON MOBILE */}
+          <div className="flex items-center justify-between w-full md:w-auto gap-4">
             <Logo />
-            <div className="flex-1 overflow-hidden">
-              <nav className="flex items-center p-1 bg-white/[0.03] border border-white/[0.05] rounded-md overflow-x-auto no-scrollbar scrollbar-hide">
-                <div className="flex items-center gap-1 px-1">
-                  {['dashboard', 'swap', 'pools', 'leaderboard'].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => {
-                        play('click');
-                        setActiveTab(tab);
-                      }}
-                      className={`px-3 md:px-5 py-1.5 rounded-md text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 whitespace-nowrap ${
-                        activeTab === tab 
-                          ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
-                          : "text-white/50 hover:text-white"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-                </div>
-              </nav>
+            
+            <div className="md:hidden flex items-center gap-2">
+              {/* Profile/Wallet on mobile right */}
+              {!isConnected ? (
+                <button onClick={() => { play('click'); setShowSafetyNotice(true); }} className="px-3 py-1.5 rounded-md bg-white text-black font-black text-[9px] uppercase tracking-wider shadow-lg">Connect</button>
+              ) : (
+                <button onClick={() => setIsProfileOpen(true)} className="flex items-center gap-2 h-8 rounded-md bg-white/[0.03] border border-white/10 px-2">
+                  <div className="w-5 h-5 rounded-md border border-white/10 overflow-hidden"><img src={selectedAvatar} className="w-full h-full object-cover" alt="" /></div>
+                  <ChevronDown size={8} className="text-white/20" />
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center justify-center md:justify-end gap-2 md:gap-4 w-full md:w-auto flex-wrap md:flex-nowrap">
-            <div className="flex items-center gap-1.5 md:gap-2">
+          {/* NAV ROW: FULL WIDTH ON MOBILE */}
+          <div className="w-full md:flex-1 md:max-w-xl">
+            <nav className="flex items-center p-1 bg-white/[0.03] border border-white/[0.05] rounded-lg">
+              <div className="grid grid-cols-4 w-full gap-1">
+                {['dashboard', 'swap', 'pools', 'leaderboard'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      play('click');
+                      setActiveTab(tab);
+                    }}
+                    className={`py-2 rounded-md text-[8px] md:text-[9px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] transition-all duration-500 text-center ${
+                      activeTab === tab 
+                        ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+                        : "text-white/40 hover:text-white"
+                    }`}
+                  >
+                    {tab === 'dashboard' ? 'Home' : tab}
+                  </button>
+                ))}
+              </div>
+            </nav>
+          </div>
+
+          {/* DESKTOP ACTIONS */}
+          <div className="hidden md:flex items-center justify-end gap-4">
+            <div className="flex items-center gap-2">
               {/* Check-in Button */}
               {(() => {
                 const nowUnix = Math.floor(Date.now() / 1000);

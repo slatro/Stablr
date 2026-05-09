@@ -179,13 +179,13 @@ export const Leaderboard = () => {
         </div>
 
         <div className="overflow-x-auto no-scrollbar scrollbar-hide">
-          <table className="w-full text-left min-w-[500px] md:min-w-0">
+          <table className="w-full text-left min-w-[380px] md:min-w-0">
             <thead>
-              <tr className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5">
-                <th className="px-8 py-5">Rank</th>
-                <th className="px-8 py-5">Wallet Address</th>
-                <th className="px-8 py-5">Tier</th>
-                <th className="px-8 py-5 text-right">Arc Points</th>
+              <tr className="text-[8px] md:text-[10px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5">
+                <th className="px-3 md:px-8 py-3 md:py-5">Rank</th>
+                <th className="px-3 md:px-8 py-3 md:py-5">Wallet</th>
+                <th className="hidden md:table-cell px-8 py-5">Tier</th>
+                <th className="px-3 md:px-8 py-3 md:py-5 text-right">Points</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.02]">
@@ -193,30 +193,29 @@ export const Leaderboard = () => {
                 const TierIcon = (TIER_ICONS as any)[user.tier];
                 return (
                   <tr key={user.address} className={`group transition-all duration-300 ${user.isUser ? 'bg-blue-500/[0.04]' : 'hover:bg-white/[0.02]'}`}>
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-4">
-                        <span className={`text-sm font-black tabular-nums ${user.rank <= 3 ? 'text-white' : 'text-white/20'}`}>
+                    <td className="px-3 md:px-8 py-3 md:py-5">
+                      <div className="flex items-center gap-2 md:gap-4">
+                        <span className={`text-[10px] md:text-sm font-black tabular-nums ${user.rank <= 3 ? 'text-white' : 'text-white/20'}`}>
                           {user.rank.toString().padStart(2, '0')}
                         </span>
                         {user.rank <= 3 && (
-                          <div className={`w-1 h-4 rounded-full bg-gradient-to-b ${(TIER_COLORS as any)[user.tier]}`} />
+                          <div className={`w-1 h-3 md:h-4 rounded-full bg-gradient-to-b ${(TIER_COLORS as any)[user.tier]}`} />
                         )}
                       </div>
                     </td>
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all duration-500 ${user.isUser ? 'bg-blue-500/20 border-blue-500/40' : 'bg-white/5 border-white/5 group-hover:bg-white/10'}`}>
-                          <User size={14} className={user.isUser ? 'text-blue-400' : 'text-white/20'} />
+                    <td className="px-3 md:px-8 py-3 md:py-5">
+                      <div className="flex items-center gap-2 md:gap-3">
+                        <div className={`w-6 h-6 md:w-8 md:h-8 rounded-lg flex items-center justify-center border transition-all duration-500 shrink-0 ${user.isUser ? 'bg-blue-500/20 border-blue-500/40' : 'bg-white/5 border-white/5'}`}>
+                          <User size={10} className={user.isUser ? 'text-blue-400' : 'text-white/20'} />
                         </div>
                         <div className="flex flex-col">
-                          <span className={`text-[11px] font-black tracking-widest uppercase ${user.isUser ? 'text-white' : 'text-white/60'}`}>
-                            {user.isUser ? 'You (Current)' : `${user.address.slice(0, 6)}...${user.address.slice(-4)}`}
+                          <span className={`text-[9px] md:text-[11px] font-black tracking-widest uppercase ${user.isUser ? 'text-white' : 'text-white/60'}`}>
+                            {user.isUser ? 'YOU' : `${user.address.slice(0, 4)}...${user.address.slice(-4)}`}
                           </span>
-                          {user.isUser && <span className="text-[8px] font-bold text-blue-400/60 uppercase tracking-tighter">Your Connected Wallet</span>}
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-5">
+                    <td className="hidden md:table-cell px-8 py-5">
                       <div className="flex items-center gap-2">
                         <div className={`p-1.5 rounded-md bg-gradient-to-br ${(TIER_COLORS as any)[user.tier]} shadow-lg opacity-80`}>
                           <TierIcon size={12} className="text-white" />
@@ -230,14 +229,14 @@ export const Leaderboard = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-5 text-right">
+                    <td className="px-3 md:px-8 py-3 md:py-5 text-right">
                       <div className="flex flex-col items-end">
-                        <span className="text-sm font-black text-white tabular-nums">
+                        <span className="text-[10px] md:text-sm font-black text-white tabular-nums leading-none">
                           {user.points.toLocaleString()}
                         </span>
-                        <div className="flex items-center gap-1">
-                          <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse" />
-                          <span className="text-[8px] font-bold text-white/10 uppercase tracking-tighter">Live Points</span>
+                        <div className="flex items-center gap-1 mt-1">
+                          <div className={`w-1 h-1 rounded-full animate-pulse ${user.isUser ? 'bg-blue-500' : 'bg-white/10'}`} />
+                          <span className="text-[7px] md:text-[8px] font-bold text-white/10 uppercase tracking-tighter">LIVE</span>
                         </div>
                       </div>
                     </td>
@@ -245,7 +244,7 @@ export const Leaderboard = () => {
                 );
               }) : (
                 <tr>
-                  <td colSpan={4} className="px-8 py-20 text-center text-white/10 text-xs font-black uppercase tracking-widest">No rankings found on-chain yet</td>
+                  <td colSpan={4} className="px-8 py-20 text-center text-white/10 text-[10px] font-black uppercase tracking-widest">No rankings found</td>
                 </tr>
               )}
             </tbody>

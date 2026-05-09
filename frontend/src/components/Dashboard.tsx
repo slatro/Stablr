@@ -106,43 +106,40 @@ const AssetRow = ({ asset, balance, price, change24h, onAction }: any) => {
   const isNative = asset?.symbol === 'USDC' || asset?.symbol === 'EURC';
   return (
     <tr className="border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors group">
-      <td className="py-4 px-6">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-2 group-hover:scale-110 transition-transform">
+      <td className="py-3 md:py-4 px-2 md:px-6">
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1.5 md:p-2 shrink-0">
             <img src={asset?.logo} alt="" className="w-full h-full rounded-full object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-black text-white uppercase tracking-tight italic">
+            <span className="text-[11px] md:text-sm font-black text-white uppercase tracking-tight italic leading-none">
               {asset?.symbol?.startsWith('a') ? <><span className="text-blue-400 lowercase">a</span><span>{asset?.symbol?.slice(1)}</span></> : asset?.symbol}
             </span>
-            <span className="text-[8px] font-bold text-white/20 uppercase tracking-[0.2em]">{asset?.name}</span>
+            <span className="hidden md:block text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1">{asset?.name}</span>
           </div>
         </div>
       </td>
-      <td className="py-4 px-5">
+      <td className="py-3 md:py-4 px-2 md:px-5">
         <div className="flex flex-col">
-          <span className="text-xs font-black text-white tabular-nums">{balance}</span>
-          <span className="text-[9px] font-bold text-white/20 tabular-nums">≈ ${(parseFloat(balance.replace(/,/g, '')) * (price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+          <span className="text-[10px] md:text-xs font-black text-white tabular-nums leading-none">{balance}</span>
+          <span className="text-[8px] md:text-[9px] font-bold text-white/20 tabular-nums mt-1">≈ ${Math.abs(parseFloat(balance.replace(/,/g, '')) * (price || 0)).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
         </div>
       </td>
-      <td className="py-4 px-5">
+      <td className="py-3 md:py-4 px-2 md:px-5">
         <div className="flex flex-col">
-          <span className="text-xs font-black text-white tabular-nums">${(price || 0).toLocaleString(undefined, { minimumFractionDigits: 4 })}</span>
-          <span className={`text-[9px] font-black italic tracking-widest ${change24h?.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'}`}>{change24h}</span>
+          <span className="text-[10px] md:text-xs font-black text-white tabular-nums leading-none">${(price || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span className={`text-[8px] md:text-[9px] font-black italic tracking-widest mt-1 ${change24h?.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'}`}>{change24h}</span>
         </div>
       </td>
-      <td className="py-4 px-5 text-right">
+      <td className="py-3 md:py-4 px-2 md:px-5 text-right">
         {asset?.symbol === 'EURC' ? (
-          <div className="flex flex-col items-center justify-center h-full px-8 ml-auto w-fit text-[7px] font-black text-white/20 uppercase tracking-[0.2em] italic leading-tight drop-shadow-[0_0_5px_rgba(255,255,255,0.1)]">
-            <span>Staking</span>
-            <span>Soon</span>
-          </div>
+          <span className="text-[7px] font-black text-white/10 uppercase tracking-widest italic">SOON</span>
         ) : (
           <button
             onClick={() => onAction(asset?.symbol === 'USDC' ? 'stake' : asset)}
-            className={`px-5 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${isNative ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white' : 'bg-white/[0.05] border-white/10 text-white/40 hover:bg-white hover:text-black'}`}
+            className={`px-3 md:px-5 py-1.5 md:py-2 rounded-lg md:rounded-xl border text-[8px] md:text-[10px] font-black uppercase tracking-widest transition-all ${isNative ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/[0.05] border-white/10 text-white/40'}`}
           >
-            {isNative ? 'Stake' : 'Trade'}
+            {isNative ? 'STK' : 'TRD'}
           </button>
         )}
       </td>
@@ -510,8 +507,8 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
   const showClaimInvite = pendingRef && !isAlreadyBound;
 
   return (
-    <div className="w-full space-y-8 px-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="w-full space-y-8 px-0 md:px-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 px-2 md:px-0">
         <StatCard
           title="ARC POINTS"
           value={userPoints !== undefined ? (Number(userPoints) + localPointsOffset).toString() : '...'}
