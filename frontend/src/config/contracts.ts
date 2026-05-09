@@ -36,13 +36,13 @@ export const TOKEN_ICONS = {
 };
 
 export const TOKENS = [
-  { symbol: 'USDC', name: 'Native USDC', decimals: 6, addr: CONTRACT_ADDRESSES.USDC_NATIVE, logo: TOKEN_ICONS.USDC },
-  { symbol: 'EURC', name: 'Native EURC', decimals: 6, addr: CONTRACT_ADDRESSES.EURC_NATIVE, logo: TOKEN_ICONS.EURC },
-  { symbol: 'aUSDC', name: 'Arc Dollar', decimals: 6, addr: CONTRACT_ADDRESSES.aUSDC, logo: TOKEN_ICONS.aUSDC },
-  { symbol: 'aEURC', name: 'Arc Euro', decimals: 18, addr: CONTRACT_ADDRESSES.aEURC, logo: TOKEN_ICONS.aEURC },
-  { symbol: 'aTRYC', name: 'Arc Lira', decimals: 18, addr: CONTRACT_ADDRESSES.aTRYC, logo: TOKEN_ICONS.aTRYC },
-  { symbol: 'aGBPC', name: 'Arc Pound', decimals: 18, addr: CONTRACT_ADDRESSES.aGBPC, logo: TOKEN_ICONS.aGBPC },
-  { symbol: 'aJPYC', name: 'Arc Yen', decimals: 18, addr: CONTRACT_ADDRESSES.aJPYC, logo: TOKEN_ICONS.aJPYC },
-  { symbol: 'astUSDC', name: 'Staked Arc Dollar', decimals: 6, addr: CONTRACT_ADDRESSES.astUSDC, logo: TOKEN_ICONS.astUSDC },
+  { symbol: 'USDC', name: 'Native USDC', decimals: 6, addr: CONTRACT_ADDRESSES.USDC_NATIVE, logo: TOKEN_ICONS.USDC, verified: true },
+  { symbol: 'EURC', name: 'Native EURC', decimals: 6, addr: CONTRACT_ADDRESSES.EURC_NATIVE, logo: TOKEN_ICONS.EURC, verified: true },
+  { symbol: 'aUSDC', name: 'Arc Dollar', decimals: 6, addr: CONTRACT_ADDRESSES.aUSDC, logo: TOKEN_ICONS.aUSDC, verified: true },
+  { symbol: 'aEURC', name: 'Arc Euro', decimals: 18, addr: CONTRACT_ADDRESSES.aEURC, logo: TOKEN_ICONS.aEURC, verified: true },
+  { symbol: 'aTRYC', name: 'Arc Lira', decimals: 18, addr: CONTRACT_ADDRESSES.aTRYC, logo: TOKEN_ICONS.aTRYC, verified: true },
+  { symbol: 'aGBPC', name: 'Arc Pound', decimals: 18, addr: CONTRACT_ADDRESSES.aGBPC, logo: TOKEN_ICONS.aGBPC, verified: true },
+  { symbol: 'aJPYC', name: 'Arc Yen', decimals: 18, addr: CONTRACT_ADDRESSES.aJPYC, logo: TOKEN_ICONS.aJPYC, verified: true },
+  { symbol: 'astUSDC', name: 'Staked Arc Dollar', decimals: 6, addr: CONTRACT_ADDRESSES.astUSDC, logo: TOKEN_ICONS.astUSDC, verified: true },
 ];
 

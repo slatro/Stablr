@@ -178,8 +178,8 @@ export const Leaderboard = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+        <div className="overflow-x-auto no-scrollbar scrollbar-hide">
+          <table className="w-full text-left min-w-[500px] md:min-w-0">
             <thead>
               <tr className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] border-b border-white/5">
                 <th className="px-8 py-5">Rank</th>

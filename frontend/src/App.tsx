@@ -14,6 +14,13 @@ import { TransactionHistory } from './components/TransactionHistory';
 import { LimitOrders } from './components/LimitOrders';
 import { PointsProvider } from './context/PointsContext';
 import { SoundProvider } from './context/SoundContext';
+import { Twitter, Github, BookOpen, Search } from 'lucide-react';
+
+const XIcon = ({ size = 12, className = "" }: { size?: number, className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.045 4.126H5.078z" />
+  </svg>
+);
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('arc_active_tab') || 'swap');
@@ -96,7 +103,7 @@ export default function App() {
               </div>
 
               <main className="flex-1 overflow-y-auto">
-                <div className="max-w-[1600px] mx-auto px-8 pt-7 pb-10">
+                <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-7 pb-10">
                   {renderContent()}
                   
                   <div className={activeTab === 'swap' ? 'mt-12 space-y-12 animate-in fade-in duration-700 block' : 'hidden'}>
@@ -110,12 +117,28 @@ export default function App() {
 
               <footer className="py-12 px-8 border-t border-white/[0.03] mt-auto bg-transparent">
                 <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-                  <div className="flex items-center gap-12">
+                  <div className="flex items-center gap-16">
                     <Logo size={14} />
-                    <div className="hidden md:flex items-center gap-8">
-                      {['Docs', 'Github', 'Twitter', 'Status'].map(link => (
-                        <a key={link} href="#" className="text-[9px] font-black text-white/20 hover:text-white uppercase tracking-[0.2em] transition-colors">{link}</a>
-                      ))}
+                    <div className="flex items-center gap-6 translate-y-[1px]">
+                       <a href="https://x.com/slatro_eth" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[9px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] transition-colors group">
+                         <XIcon size={12} className="text-white group-hover:scale-110 transition-transform" />
+                         X (prev. Twitter)
+                       </a>
+                       <div className="w-px h-3 bg-white/10" />
+                       <a href="https://github.com/slatro" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[9px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] transition-colors group">
+                         <Github size={12} className="text-white group-hover:scale-110 transition-transform" />
+                         Github
+                       </a>
+                       <div className="w-px h-3 bg-white/10" />
+                       <a href="https://testnet.arcscan.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[9px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] transition-colors group">
+                         <Search size={12} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                         Arc Scan
+                       </a>
+                       <div className="w-px h-3 bg-white/10" />
+                       <a href="#" className="flex items-center gap-2 text-[9px] font-black text-white/40 hover:text-white uppercase tracking-[0.2em] transition-colors group">
+                         <BookOpen size={12} className="text-emerald-400 group-hover:scale-110 transition-transform" />
+                         Docs
+                       </a>
                     </div>
                   </div>
                   <div className="text-[8px] font-black text-white/10 uppercase tracking-[0.4em]">© 2026 ARCFX PROTOCOL. ALL RIGHTS RESERVED.</div>

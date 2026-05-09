@@ -540,23 +540,25 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
         <div className="space-y-4">
           <div className="flex items-center gap-3 px-2 h-8"><div className="w-1.5 h-6 bg-emerald-500 rounded-full" /><h3 className="text-xs font-black text-white uppercase tracking-[0.3em]">Asset Portfolio</h3></div>
           <div className="premium-card overflow-hidden shadow-2xl">
-            <table className="w-full text-left border-collapse">
-              <thead><tr className="border-b border-white/5 bg-white/[0.02]"><th className="py-4 px-5 text-[10px] font-black text-white/20 uppercase">Asset</th><th className="py-4 px-5 text-[10px] font-black text-white/20 uppercase">Balance</th><th className="py-4 px-5 text-[10px] font-black text-white/20 uppercase">Price</th><th className="py-4 px-5 text-right text-[10px] font-black text-white/20 uppercase">Actions</th></tr></thead>
-              <tbody>
-                {TOKENS.map((token, i) => {
-                  const priceData = prices[token.symbol] || { price: 1, change24h: '+0.00%' };
-                  let formattedBal = '0.00';
-                  if (token.symbol === 'USDC' && usdcNativeBal) formattedBal = parseFloat(formatUnits(usdcNativeBal.value, 18)).toFixed(4);
-                  else if (token.symbol === 'EURC' && eurcNativeBal !== undefined) formattedBal = parseFloat(formatUnits(BigInt(eurcNativeBal.toString()), 6)).toFixed(4);
-                  else {
-                    const balRes = balances?.[i];
-                    const rawBal = (balRes?.status === 'success' && balRes.result !== undefined) ? BigInt(balRes.result.toString()) : 0n;
-                    formattedBal = parseFloat(formatUnits(rawBal, token.decimals)).toFixed(4);
-                  }
-                  return <AssetRow key={token.symbol} asset={token} balance={formattedBal} price={priceData.price} change24h={priceData.change24h} onAction={onTradeAction} />;
-                })}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto no-scrollbar scrollbar-hide">
+              <table className="w-full text-left border-collapse min-w-[500px] md:min-w-0">
+                <thead><tr className="border-b border-white/5 bg-white/[0.02]"><th className="py-4 px-5 text-[10px] font-black text-white/20 uppercase">Asset</th><th className="py-4 px-5 text-[10px] font-black text-white/20 uppercase">Balance</th><th className="py-4 px-5 text-[10px] font-black text-white/20 uppercase">Price</th><th className="py-4 px-5 text-right text-[10px] font-black text-white/20 uppercase">Actions</th></tr></thead>
+                <tbody>
+                  {TOKENS.map((token, i) => {
+                    const priceData = prices[token.symbol] || { price: 1, change24h: '+0.00%' };
+                    let formattedBal = '0.00';
+                    if (token.symbol === 'USDC' && usdcNativeBal) formattedBal = parseFloat(formatUnits(usdcNativeBal.value, 18)).toFixed(4);
+                    else if (token.symbol === 'EURC' && eurcNativeBal !== undefined) formattedBal = parseFloat(formatUnits(BigInt(eurcNativeBal.toString()), 6)).toFixed(4);
+                    else {
+                      const balRes = balances?.[i];
+                      const rawBal = (balRes?.status === 'success' && balRes.result !== undefined) ? BigInt(balRes.result.toString()) : 0n;
+                      formattedBal = parseFloat(formatUnits(rawBal, token.decimals)).toFixed(4);
+                    }
+                    return <AssetRow key={token.symbol} asset={token} balance={formattedBal} price={priceData.price} change24h={priceData.change24h} onAction={onTradeAction} />;
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -567,8 +569,8 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
           </div>
 
           {/* ULTRA COMPACT STAKING ROW */}
-          <div className="premium-card p-3 shadow-xl border-purple-500/20 bg-purple-500/[0.02]">
-            <div className="flex items-center justify-between gap-4 px-2">
+          <div className="premium-card p-3 shadow-xl border-purple-500/20 bg-purple-500/[0.02] overflow-x-auto no-scrollbar scrollbar-hide">
+            <div className="flex items-center justify-between gap-4 px-2 min-w-[500px] md:min-w-0">
               <div className="flex items-center gap-3 min-w-[140px]">
                 <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-2 shrink-0">
                   <img src={astUSDC_Token?.logo} className="w-full h-full rounded-full" alt="" />
@@ -581,7 +583,7 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
                 </div>
               </div>
 
-              <div className="flex-1 flex items-center justify-around gap-6 overflow-hidden">
+              <div className="flex-1 flex items-center justify-around gap-6">
                 <div className="flex flex-col">
                   <span className="text-xs font-black text-white tabular-nums leading-none">
                     {astUSDC_Bal.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
@@ -618,42 +620,44 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
           </div>
 
           <div className="premium-card overflow-hidden shadow-2xl">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-white/5 bg-white/[0.02]">
-                  <th className="py-4 px-6 text-[9px] font-black text-white/20 uppercase">Pair</th>
-                  <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">Balance</th>
-                  <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">Value</th>
-                  <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">APR</th>
-                  <th className="py-4 px-6 text-right text-[9px] font-black text-white/20 uppercase">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.02]">
-                {poolDetails.length > 0 ? poolDetails.map((pool, i) => (
-                  <tr key={i} className="hover:bg-white/[0.01] transition-colors group">
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-3">
-                        <div className="flex -space-x-1.5 group-hover:-space-x-0.5 transition-all duration-300">
-                          <img src={pool.pair[0].logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" />
-                          <img src={pool.pair[1].logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" />
-                        </div>
-                        <span className="text-[11px] font-black text-white uppercase">
-                          <FormatSymbol symbol={pool.pair[0].symbol} /> / <FormatSymbol symbol={pool.pair[1].symbol} />
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-[10px] font-black text-white tabular-nums">{parseFloat(pool.lpBalance).toFixed(6)}</td>
-                    <td className="py-4 px-4 text-[10px] font-black text-emerald-400">${pool.usdValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
-                    <td className="py-4 px-4 text-[10px] font-black text-emerald-400">{pool.apr}</td>
-                    <td className="py-4 px-6 text-right">
-                      <div className="flex items-center justify-end gap-1.5 text-[9px] font-bold text-emerald-400 uppercase tracking-widest">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Earning
-                      </div>
-                    </td>
+            <div className="overflow-x-auto no-scrollbar scrollbar-hide">
+              <table className="w-full text-left min-w-[500px] md:min-w-0">
+                <thead>
+                  <tr className="border-b border-white/5 bg-white/[0.02]">
+                    <th className="py-4 px-6 text-[9px] font-black text-white/20 uppercase">Pair</th>
+                    <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">Balance</th>
+                    <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">Value</th>
+                    <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">APR</th>
+                    <th className="py-4 px-6 text-right text-[9px] font-black text-white/20 uppercase">Status</th>
                   </tr>
-                )) : <tr><td colSpan={5} className="px-5 py-16 text-center"><div className="flex flex-col items-center gap-3 opacity-20"><Wallet size={32} /><span className="text-[10px] font-black uppercase tracking-[0.4em]">No active positions</span></div></td></tr>}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-white/[0.02]">
+                  {poolDetails.length > 0 ? poolDetails.map((pool, i) => (
+                    <tr key={i} className="hover:bg-white/[0.01] transition-colors group">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          <div className="flex -space-x-1.5 group-hover:-space-x-0.5 transition-all duration-300">
+                            <img src={pool.pair[0].logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" />
+                            <img src={pool.pair[1].logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" />
+                          </div>
+                          <span className="text-[11px] font-black text-white uppercase">
+                            <FormatSymbol symbol={pool.pair[0].symbol} /> / <FormatSymbol symbol={pool.pair[1].symbol} />
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-[10px] font-black text-white tabular-nums">{parseFloat(pool.lpBalance).toFixed(6)}</td>
+                      <td className="py-4 px-4 text-[10px] font-black text-emerald-400">${pool.usdValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                      <td className="py-4 px-4 text-[10px] font-black text-emerald-400">{pool.apr}</td>
+                      <td className="py-4 px-6 text-right">
+                        <div className="flex items-center justify-end gap-1.5 text-[9px] font-bold text-emerald-400 uppercase tracking-widest">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Earning
+                        </div>
+                      </td>
+                    </tr>
+                  )) : <tr><td colSpan={5} className="px-5 py-16 text-center"><div className="flex flex-col items-center gap-3 opacity-20"><Wallet size={32} /><span className="text-[10px] font-black uppercase tracking-[0.4em]">No active positions</span></div></td></tr>}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

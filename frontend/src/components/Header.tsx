@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Menu, ShieldCheck, Wallet, Loader2, Zap, ExternalLink, CheckCircle2, Droplets } from 'lucide-react';
+import { ChevronDown, Menu, ShieldCheck, Wallet, Loader2, Zap, ExternalLink, CheckCircle2, Droplets, ShieldAlert, X } from 'lucide-react';
 import { useAccount, useReadContract, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
@@ -10,6 +10,7 @@ import { triggerIsland } from './TransactionIsland';
 import { useSound } from '../context/SoundContext';
 import ERC20_ABI from '../abis/ERC20.json';
 import FAUCET_ABI from '../abis/ArcMultiFaucet.json';
+import POINTS_ABI from '../abis/ArcPoints.json';
 
 export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActiveTab: (tab: string) => void }) => {
   const { address, isConnected } = useAccount();
@@ -19,6 +20,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
   const [selectedAvatar, setSelectedAvatar] = useState(AVATARS[0]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showSafetyNotice, setShowSafetyNotice] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('arc_profile_avatar');
@@ -32,7 +34,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
 
   const { data: rawUsdcBalance } = useReadContract({
     address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`,
-    abi: ERC20_ABI,
+    abi: ERC20_ABI.abi || ERC20_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 5000 }
@@ -40,7 +42,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
 
   const { data: usdcDecimals } = useReadContract({
     address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`,
-    abi: ERC20_ABI,
+    abi: ERC20_ABI.abi || ERC20_ABI,
     functionName: 'decimals',
   });
 
@@ -55,46 +57,48 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
     }
   }, [address]);
 
-  const { data: faucetHash, writeContract: faucetWrite, isPending: isFaucetPending, error: faucetError } = useWriteContract();
+  const { data: faucetHash, writeContract: faucetWrite, isPending: isFaucetPending, error: faucetError, reset: resetFaucet } = useWriteContract();
   const { isLoading: isFaucetConfirming, isSuccess: isFaucetSuccess } = useWaitForTransactionReceipt({ hash: faucetHash });
 
   useEffect(() => {
-    if (isFaucetSuccess) {
+    if (isFaucetSuccess && address) {
       const now = Math.floor(Date.now() / 1000);
       setLocalLastMint(now);
       localStorage.setItem(`faucet_${address}`, now.toString());
       setShowSuccess(true);
-      triggerIsland('success', 'ArcFX Assets (aUSDC, aEURC, etc.) Claimed', faucetHash, { type: 'Faucet Claim', asset: 'Multiple', amount: '+10' });
-      setTimeout(() => setShowSuccess(false), 5000);
+      triggerIsland('success', 'ArcFX Assets Claimed', faucetHash, { type: 'Faucet Claim', asset: 'Multiple', amount: '+10' });
+      setTimeout(() => {
+        setShowSuccess(false);
+        if (resetFaucet) resetFaucet();
+      }, 5000);
     }
   }, [isFaucetSuccess, address, faucetHash]);
 
   // Points/Check-in Logic
   const { data: nextCheckIn, refetch: refetchCheckIn } = useReadContract({
     address: CONTRACT_ADDRESSES.ARC_POINTS as `0x${string}`,
-    abi: [
-      { name: 'getNextCheckInTime', type: 'function', stateMutability: 'view', inputs: [{ name: 'user', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
-    ],
+    abi: POINTS_ABI.abi || POINTS_ABI,
     functionName: 'getNextCheckInTime',
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 10000 }
   });
 
-  const { writeContract: checkInWrite, data: checkInHash, isPending: isCheckInPending } = useWriteContract();
-  const { isLoading: isCheckInConfirming, isSuccess: isCheckInSuccess } = useWaitForTransactionReceipt({ hash: checkInHash });
+  const { writeContract: checkInWrite, data: checkInHash, isPending: isCheckInPending, error: checkInError, reset: resetCheckIn } = useWriteContract();
+  const { isLoading: isCheckInConfirming, isSuccess: isCheckInSuccess, error: checkInWaitError } = useWaitForTransactionReceipt({ hash: checkInHash });
 
   useEffect(() => {
     if (isCheckInSuccess) {
       refetchCheckIn();
       triggerIsland('success', 'Daily Check-in Successful', checkInHash, { type: 'check-in' });
+      setTimeout(() => {
+        if (resetCheckIn) resetCheckIn();
+      }, 5000);
     }
   }, [isCheckInSuccess, checkInHash]);
 
-  const { data: userData } = useReadContract({
+  const { data: userData, refetch: refetchUserData } = useReadContract({
     address: CONTRACT_ADDRESSES.ARC_POINTS as `0x${string}`,
-    abi: [
-      { name: 'users', type: 'function', stateMutability: 'view', inputs: [{ name: '', type: 'address' }], outputs: [{ name: 'totalPoints', type: 'uint256' }, { name: 'lastCheckIn', type: 'uint256' }, { name: 'currentStreak', type: 'uint256' }, { name: 'totalSwaps', type: 'uint256' }, { name: 'totalLiquidityAdded', type: 'uint256' }] },
-    ],
+    abi: POINTS_ABI.abi || POINTS_ABI,
     functionName: 'users',
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 10000 }
@@ -103,41 +107,46 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
   const streak = userData ? Number(userData[2]) : 0;
 
   useEffect(() => {
-    if (faucetError) {
-      setErrorMsg(faucetError.message);
+    const error = faucetError || checkInError || checkInWaitError;
+    if (error) {
+      setErrorMsg((error as any).shortMessage || error.message);
       const timer = setTimeout(() => setErrorMsg(null), 5000);
       return () => clearTimeout(timer);
     }
-  }, [faucetError]);
+  }, [faucetError, checkInError, checkInWaitError]);
 
   return (
     <>
-      <header className="w-full h-[76px] flex items-center z-50 border-b border-white/[0.03] backdrop-blur-md">
-        <div className="w-full px-8 flex items-center justify-between">
-          <div className="flex items-center gap-10">
+      <header className="w-full min-h-[76px] flex items-center z-50 border-b border-white/[0.03] backdrop-blur-md sticky top-0">
+        <div className="w-full px-4 md:px-8 py-3 md:py-0 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center justify-between w-full md:w-auto gap-2 md:gap-10">
             <Logo />
-            <nav className="flex items-center p-1 bg-white/[0.03] border border-white/[0.05] rounded-md">
-              {['dashboard', 'swap', 'pools', 'leaderboard'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    play('click');
-                    setActiveTab(tab);
-                  }}
-                  className={`px-5 py-1.5 rounded-md text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
-                    activeTab === tab 
-                      ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
-                      : "text-white/50 hover:text-white"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </nav>
+            <div className="flex-1 overflow-hidden">
+              <nav className="flex items-center p-1 bg-white/[0.03] border border-white/[0.05] rounded-md overflow-x-auto no-scrollbar scrollbar-hide">
+                <div className="flex items-center gap-1 px-1">
+                  {['dashboard', 'swap', 'pools', 'leaderboard'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => {
+                        play('click');
+                        setActiveTab(tab);
+                      }}
+                      className={`px-3 md:px-5 py-1.5 rounded-md text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 whitespace-nowrap ${
+                        activeTab === tab 
+                          ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
+                          : "text-white/50 hover:text-white"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </nav>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center md:justify-end gap-2 md:gap-4 w-full md:w-auto flex-wrap md:flex-nowrap">
+            <div className="flex items-center gap-1.5 md:gap-2">
               {/* Check-in Button */}
               {(() => {
                 const nowUnix = Math.floor(Date.now() / 1000);
@@ -148,10 +157,12 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
                   <button 
                     onClick={() => {
                       play('click');
+                      const ref = localStorage.getItem('arc_pending_ref') || '0x0000000000000000000000000000000000000000';
                       checkInWrite({
                         address: CONTRACT_ADDRESSES.ARC_POINTS as `0x${string}`,
-                        abi: [{ name: 'checkIn', type: 'function', stateMutability: 'nonpayable', inputs: [], outputs: [] }],
+                        abi: POINTS_ABI.abi || POINTS_ABI,
                         functionName: 'checkIn',
+                        args: [ref as `0x${string}`]
                       });
                       triggerIsland('processing', 'Authenticating Check-in...');
                     }}
@@ -167,8 +178,8 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
                     ) : (
                       <CheckCircle2 size={10} className={canCheckIn ? "text-emerald-400" : "text-white/40"} />
                     )}
-                    <span className="text-[7px] font-black uppercase tracking-widest">
-                      {canCheckIn ? 'Check-in' : `${streak} Day Streak`}
+                    <span className="text-[7px] font-black uppercase tracking-widest whitespace-nowrap">
+                      {canCheckIn ? 'Check-in' : `${streak}D Streak`}
                     </span>
                   </button>
                 );
@@ -194,7 +205,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
                       triggerIsland('processing', 'Minting ArcFX Assets...');
                     }}
                     disabled={!isConnected || isFaucetPending || isFaucetConfirming || inCooldown}
-                    className={`flex items-center gap-2 px-2.5 py-1 rounded-md border transition-all duration-700 shadow-lg group ${
+                    className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-2.5 py-1 rounded-md border transition-all duration-700 shadow-lg group ${
                       !isConnected ? 'bg-white/5 border-white/5 opacity-50 cursor-not-allowed' : 
                       inCooldown ? 'bg-white/5 border-white/10 text-white/40 cursor-not-allowed' :
                       'bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border-blue-500/20 text-blue-400 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(168,85,247,0.15)]'
@@ -205,19 +216,19 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
                     ) : (
                       <Droplets size={10} className={inCooldown ? "text-white/40" : "text-blue-400"} />
                     )}
-                    <span className="text-[8px] font-black uppercase tracking-[0.15em]">
-                      {inCooldown ? `WAIT ${hours}H ${mins}M` : 'ArcFX Faucet'}
+                    <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.15em] whitespace-nowrap">
+                      {inCooldown ? `${hours}H ${mins}M` : 'Faucet'}
                     </span>
                   </button>
                 );
               })()}
 
-              {/* External Circle Faucet Link */}
+              {/* External Circle Faucet Link (Hidden on mobile) */}
               <a 
                 href="https://faucet.circle.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-all duration-500 group shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:scale-105 active:scale-95"
+                className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-all duration-500 group shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:scale-105 active:scale-95"
               >
                 <ExternalLink size={10} className="animate-pulse" />
                 <span className="text-[8px] font-black uppercase tracking-[0.15em]">USDC Faucet</span>
@@ -227,27 +238,27 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
             {/* Wallet Connection */}
             {!isConnected ? (
               <button 
-                onClick={openConnectModal}
-                className="px-6 py-3 rounded-md bg-white text-black font-black text-[10px] uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+                onClick={() => { play('click'); setShowSafetyNotice(true); }}
+                className="px-4 md:px-6 py-2.5 md:py-3 rounded-md bg-white text-black font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)]"
               >
-                Connect Wallet
+                Connect
               </button>
             ) : (
               <button 
                 onClick={() => setIsProfileOpen(true)}
-                className="group flex items-center h-9 rounded-md bg-white/[0.03] border border-white/10 hover:border-blue-500/30 hover:bg-white/[0.06] transition-all pl-3 pr-1.5 gap-3 backdrop-blur-xl"
+                className="group flex items-center h-8 md:h-9 rounded-md bg-white/[0.03] border border-white/10 hover:border-blue-500/30 hover:bg-white/[0.06] transition-all pl-2 md:pl-3 pr-1 md:pr-1.5 gap-2 md:gap-3 backdrop-blur-xl"
               >
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] font-black text-white leading-none mb-0.5">
+                  <span className="text-[9px] md:text-[10px] font-black text-white leading-none mb-0.5">
                     {formattedNative} <span className="text-blue-400">USDC</span>
                   </span>
-                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-tighter">
-                    {address?.slice(0, 6)}...{address?.slice(-4)}
+                  <span className="text-[7px] md:text-[8px] font-bold text-white/30 uppercase tracking-tighter">
+                    {address?.slice(0, 4)}...{address?.slice(-4)}
                   </span>
                 </div>
                 <div className="h-4 w-px bg-white/10" />
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md border border-white/10 p-0.5 bg-black/40 group-hover:scale-110 transition-transform relative overflow-hidden">
+                <div className="flex items-center gap-1 md:gap-2">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-md border border-white/10 p-0.5 bg-black/40 group-hover:scale-110 transition-transform relative overflow-hidden">
                     <img src={selectedAvatar} alt="Profile" className="w-full h-full rounded-md object-cover" />
                   </div>
                   <ChevronDown size={8} className="text-white/20 group-hover:text-blue-400 group-hover:rotate-180 transition-all mr-1" />
@@ -294,6 +305,59 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
               <span className="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] mb-1">Faucet Error</span>
               <span className="text-[9px] font-bold text-white/40 max-w-[200px] truncate">{errorMsg}</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Safety Notice Modal */}
+      {showSafetyNotice && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSafetyNotice(false)} />
+          <div className="relative w-full max-w-[400px] bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+            
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                <ShieldAlert size={32} className="text-blue-400" />
+              </div>
+              
+              <h2 className="text-xs font-black text-white uppercase tracking-[0.4em] mb-4 italic">Security Protocol</h2>
+              
+              <div className="space-y-4 mb-8">
+                <p className="text-[11px] font-medium text-white/50 leading-relaxed tracking-wide">
+                  ArcFX is currently in <span className="text-blue-400 font-black italic">BETA TESTNET</span>.
+                </p>
+                <p className="text-[11px] font-medium text-white/40 leading-relaxed tracking-wide">
+                  For your safety, please ensure you are connecting a <span className="text-white font-black underline decoration-blue-500/50 underline-offset-4">TEST WALLET</span> with no mainnet assets.
+                </p>
+              </div>
+
+              <div className="flex flex-col w-full gap-3">
+                <button 
+                  onClick={() => {
+                    play('click');
+                    setShowSafetyNotice(false);
+                    openConnectModal?.();
+                  }}
+                  className="w-full py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-xl hover:bg-blue-400 transition-all hover:scale-[1.02] active:scale-95 shadow-xl"
+                >
+                  Proceed to Connect
+                </button>
+                <button 
+                  onClick={() => setShowSafetyNotice(false)}
+                  className="w-full py-3 text-[8px] font-black text-white/20 hover:text-white uppercase tracking-[0.2em] transition-all"
+                >
+                  I'll use a different wallet
+                </button>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setShowSafetyNotice(false)}
+              className="absolute top-4 right-4 text-white/20 hover:text-white transition-colors"
+            >
+              <X size={16} />
+            </button>
           </div>
         </div>
       )}

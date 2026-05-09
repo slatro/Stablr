@@ -73,7 +73,10 @@ const TokenBox = ({ type, token, amount, setAmount, isReadOnly, userAddress, onT
               {token ? (
                 <>
                   <img src={token.logo} alt={token.symbol} className="w-5 h-5 rounded-full" />
-                  <span className="text-xs font-black text-white">{token.symbol}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs font-black text-white">{token.symbol}</span>
+                    {token.verified && <ShieldCheck size={10} className="text-emerald-400" />}
+                  </div>
                 </>
               ) : (
                 <>
@@ -89,14 +92,17 @@ const TokenBox = ({ type, token, amount, setAmount, isReadOnly, userAddress, onT
           {onTokenSelect.isOpen && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[130px] z-[9999] p-1 bg-[#1a1a1a] border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.9)] rounded-xl animate-in fade-in zoom-in-95 duration-150"
+              className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[130px] z-[9999] p-1 bg-[#0a0a0a] border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.9)] rounded-xl animate-in fade-in zoom-in-95 duration-150"
             >
               <div className="flex flex-col">
                 {onTokenSelect.tokens.map((t: any) => (
                   <button key={t.symbol} onClick={() => { onTokenSelect.onSelect(t); }} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/10 transition-all group">
                     <div className="flex items-center gap-2">
                       <img src={t.logo} alt="" className="w-4 h-4 rounded-full" />
-                      <span className="text-[10px] font-black text-white">{t.symbol}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-black text-white">{t.symbol}</span>
+                        {t.verified && <ShieldCheck size={9} className="text-emerald-400" />}
+                      </div>
                     </div>
                     {token?.symbol === t.symbol && <div className="w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
                   </button>
@@ -273,7 +279,7 @@ export const SwapCard = ({
     allowance < parseUnits(fromAmount || '0', tokenIn?.decimals || 18)
   );
 
-  const { signMessage } = useSignMessage();
+  const { signMessage, isPending: isSignPending } = useSignMessage();
   const { data: actionHash, writeContract: actionWrite, isPending: isActionPending, error: actionError, reset: resetAction } = useWriteContract();
   const { isLoading: isActionConfirming, isSuccess: isActionSuccess, error: actionWaitError } = useWaitForTransactionReceipt({ hash: actionHash });
 
@@ -349,21 +355,43 @@ export const SwapCard = ({
   const toAmount = useMemo(() => {
     if (!fromAmount || isNaN(parseFloat(fromAmount))) return '';
     if (activeTab === 'stake') return parseFloat(formatUnits(stakingToAmountRaw, tokenOut.decimals)).toFixed(4);
+    if (activeTab === 'limit' && limitPrice && !isNaN(parseFloat(limitPrice))) {
+      return (parseFloat(fromAmount) * parseFloat(limitPrice)).toFixed(4);
+    }
     const raw = (poolAmountOut && (poolAmountOut as bigint) > 0n) ? (poolAmountOut as bigint) : visualToAmountRaw;
     if (raw === 0n || !tokenOut) return '';
     return parseFloat(formatUnits(raw, tokenOut.decimals)).toFixed(4);
-  }, [fromAmount, poolAmountOut, visualToAmountRaw, tokenOut, activeTab, stakingToAmountRaw]);
+  }, [fromAmount, poolAmountOut, visualToAmountRaw, tokenOut, activeTab, stakingToAmountRaw, limitPrice]);
+
+  const marketPrice = useMemo(() => {
+    if (!tokenIn || !tokenOut || !prices[tokenIn.symbol] || !prices[tokenOut.symbol]) return 0;
+    return prices[tokenIn.symbol].price / prices[tokenOut.symbol].price;
+  }, [tokenIn, tokenOut, prices]);
+
+  const isInvalidLimit = useMemo(() => {
+    if (activeTab !== 'limit' || !limitPrice || isNaN(parseFloat(limitPrice)) || marketPrice === 0) return false;
+    const limit = parseFloat(limitPrice);
+    // Logic: If user is getting tokenOut (Buying it with tokenIn)
+    // They should only place a limit if target is BETTER than market.
+    // For Buy: target < market (cheaper)
+    // For Sell: target > market (dearer)
+    // In our UI, tokenIn -> tokenOut. So we are buying tokenOut.
+    return limit > marketPrice; // Buy Limit must be LOWER than market
+  }, [activeTab, limitPrice, marketPrice]);
 
   const minReceived = useMemo(() => {
     if (!fromAmount || isNaN(parseFloat(fromAmount))) return '0.00';
     if (activeTab === 'stake') return formatUnits(stakingToAmountRaw, tokenOut.decimals);
+    if (activeTab === 'limit' && limitPrice && !isNaN(parseFloat(limitPrice))) {
+      return (parseFloat(fromAmount) * parseFloat(limitPrice)).toFixed(4);
+    }
     const baseAmount = (poolAmountOut && (poolAmountOut as bigint) > 0n) ? (poolAmountOut as bigint) : visualToAmountRaw;
     if (baseAmount === 0n || !tokenOut) return '0.00';
     const slippagePercent = isAutoSlippage ? 0.5 : (parseFloat(internalSlippage) || 0.5);
     const slippageVal = slippagePercent / 100;
     const factor = BigInt(Math.floor((1 - slippageVal) * 10000));
     return formatUnits((baseAmount * factor) / 10000n, tokenOut.decimals);
-  }, [poolAmountOut, visualToAmountRaw, tokenOut, internalSlippage, isAutoSlippage, activeTab, stakingToAmountRaw]);
+  }, [poolAmountOut, visualToAmountRaw, tokenOut, internalSlippage, isAutoSlippage, activeTab, stakingToAmountRaw, limitPrice]);
 
   // --- ROBUST PRICE IMPACT CALCULATION ---
   const priceImpact = useMemo(() => {
@@ -521,6 +549,18 @@ export const SwapCard = ({
           <div className={`relative ${isSelectOpen === 'out' ? 'z-[50]' : 'z-10'}`}>
             <TokenBox type="To" token={tokenOut} amount={toAmount} setAmount={() => {}} isReadOnly={true} userAddress={address} onTokenSelect={{ isOpen: isSelectOpen === 'out', onToggle: () => toggleSelect('out'), onSelect: (t: any) => { if (tokenIn?.symbol === t.symbol) setTokenIn(null); setTokenOut(t); setIsSelectOpen(null); }, tokens: filteredTokens }} isLocked={activeTab === 'stake'} />
           </div>
+
+          {((tokenIn && !tokenIn.verified) || (tokenOut && !tokenOut.verified)) && (
+            <div className="mx-1 p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0">
+                <AlertCircle size={14} className="text-orange-500" />
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">Unverified Asset</span>
+                <span className="text-[9px] font-medium text-white/40 leading-tight">This token is not verified by the protocol. Please trade with extreme caution.</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="relative z-10 space-y-2 px-1">
@@ -579,8 +619,8 @@ export const SwapCard = ({
       <div className="premium-card p-4 flex items-center justify-center relative z-10">
         <button
           onClick={handleAction}
-          disabled={!isConnected || !fromAmount || insufficientBalance || isActionPending || isApprovePending || !tokenIn || !tokenOut}
-          className={`w-[92%] py-3.5 rounded-xl flex items-center justify-center gap-3 transition-all duration-700 relative overflow-hidden group border ${(!isConnected || !fromAmount || insufficientBalance || isActionPending || isApprovePending || !tokenIn || !tokenOut)
+          disabled={!isConnected || !fromAmount || insufficientBalance || isActionPending || isActionConfirming || isApprovePending || isApproveConfirming || isSignPending || isInvalidLimit || !tokenIn || !tokenOut}
+          className={`w-[92%] py-3.5 rounded-xl flex items-center justify-center gap-3 transition-all duration-700 relative overflow-hidden group border ${(!isConnected || !fromAmount || insufficientBalance || isActionPending || isActionConfirming || isApprovePending || isApproveConfirming || isSignPending || isInvalidLimit || !tokenIn || !tokenOut)
               ? 'bg-white/[0.02] text-white/10 cursor-not-allowed border-white/5 shadow-none'
               : (parseFloat(internalSlippage) > 3
                 ? 'bg-rose-500 text-white hover:bg-rose-600 border-rose-400 shadow-[0_0_40px_rgba(244,63,94,0.3)]'
@@ -588,7 +628,7 @@ export const SwapCard = ({
             }`}
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          {isActionPending || isActionConfirming || isApprovePending || isApproveConfirming ? (
+          {isActionPending || isActionConfirming || isApprovePending || isApproveConfirming || isSignPending ? (
             <><Loader2 className="animate-spin" size={16} strokeWidth={3} /><span className="tracking-[0.5em] font-black text-[10px]">PROCESSING</span></>
           ) : !isConnected ? (
             <span className="tracking-[0.5em] font-black text-[10px]">CONNECT WALLET</span>
@@ -598,6 +638,8 @@ export const SwapCard = ({
             <span className="tracking-[0.5em] font-black text-[10px] opacity-40 uppercase">ENTER AMOUNT</span>
           ) : insufficientBalance ? (
             <span className="tracking-[0.3em] font-black text-[10px] text-red-500/80">INSUFFICIENT BALANCE</span>
+          ) : isInvalidLimit ? (
+            <span className="tracking-[0.2em] font-black text-[10px] text-red-500">INVALID LIMIT PRICE</span>
           ) : needsApproval ? (
             <span className="tracking-[0.5em] font-black text-[10px]">APPROVE {tokenIn.symbol}</span>
           ) : parseFloat(internalSlippage) > 3 ? (

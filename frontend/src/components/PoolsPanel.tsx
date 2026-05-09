@@ -508,9 +508,9 @@ export const PoolsPanel = () => {
         <div className="col-span-12 lg:col-span-6 flex flex-col gap-4">
           <div className="premium-card min-h-[400px] flex flex-col bg-white/[0.02] overflow-hidden shadow-2xl">
             <div className="h-[51px] px-4 border-b border-white/5 bg-white/[0.03] flex items-center justify-between"><h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] flex items-center gap-2"><Layers size={14} className="text-blue-500" /> My Positions</h3>{positions.length > 0 && <span className="px-2 py-0.5 rounded-md bg-blue-500 text-[9px] font-black text-white shadow-lg shadow-blue-500/20">{positions.length}</span>}</div>
-            <div className="p-0 flex-1">
+            <div className="p-0 flex-1 overflow-x-auto no-scrollbar scrollbar-hide">
               {positions.length === 0 ? <div className="flex flex-col items-center justify-center py-20 gap-4 text-white/10"><Wallet size={48} className="opacity-20" /><p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">No Active Liquidity</p></div> : (
-                <table className="w-full text-left">
+                <table className="w-full text-left min-w-[500px] md:min-w-0">
                   <thead>
                     <tr className="border-b border-white/5">
                       <th className="py-4 px-6 text-[9px] font-black text-white/20 uppercase">Pair</th>
@@ -546,36 +546,39 @@ export const PoolsPanel = () => {
         <div className="col-span-12 lg:col-span-6">
           <div className="premium-card overflow-hidden bg-white/[0.02] shadow-2xl">
             <div className="h-[51px] px-4 border-b border-white/5 bg-white/[0.03] flex items-center"><h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] flex items-center gap-2"><Droplets size={14} className="text-emerald-500" /> Platform Pools</h3></div>
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-white/5">
-                  <th className="py-4 px-6 text-[9px] font-black text-white/20 uppercase">Pair</th>
-                  <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">APR</th>
-                  <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">TVL</th>
-                  <th className="py-4 px-6 text-right text-[9px] font-black text-white/20 uppercase">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.02]">
-                {PLATFORM_POOLS.map((pool, i) => (
-                  <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-3">
-                        <div className="flex -space-x-1.5 group-hover:-space-x-0.5 transition-all duration-300"><img src={pool.tokens[0]?.logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" /><img src={pool.tokens[1]?.logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" /></div>
-                        <span className="text-[11px] font-black text-white uppercase"><FormatSymbol symbol={pool.tokens[0]?.symbol} /> / <FormatSymbol symbol={pool.tokens[1]?.symbol} /></span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-[10px] font-black text-emerald-400">{pool.apr}</td>
-                    <td className="py-4 px-4 text-[10px] font-black text-white/50">{pool.tvl}</td>
-                    <td className="py-4 px-6 text-right">
-                      <button onClick={() => { setTokenA(pool.tokens[0]); setTokenB(pool.tokens[1]); setView('add'); setRecentTxHash(null); setHideToggle(false); }} className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[9px] font-black uppercase hover:bg-white hover:text-black transition-all active:scale-95 shadow-lg shadow-black/20">Add / Remove</button>
-                    </td>
+            <div className="overflow-x-auto no-scrollbar scrollbar-hide">
+              <table className="w-full text-left min-w-[500px] md:min-w-0">
+                <thead>
+                  <tr className="border-b border-white/5">
+                    <th className="py-4 px-6 text-[9px] font-black text-white/20 uppercase">Pair</th>
+                    <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">APR</th>
+                    <th className="py-4 px-4 text-[9px] font-black text-white/20 uppercase">TVL</th>
+                    <th className="py-4 px-6 text-right text-[9px] font-black text-white/20 uppercase">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-white/[0.02]">
+                  {PLATFORM_POOLS.map((pool, i) => (
+                    <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          <div className="flex -space-x-1.5 group-hover:-space-x-0.5 transition-all duration-300"><img src={pool.tokens[0]?.logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" /><img src={pool.tokens[1]?.logo} className="w-6 h-6 rounded-full border border-[#0a0a0a]" /></div>
+                          <span className="text-[11px] font-black text-white uppercase"><FormatSymbol symbol={pool.tokens[0]?.symbol} /> / <FormatSymbol symbol={pool.tokens[1]?.symbol} /></span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-[10px] font-black text-emerald-400">{pool.apr}</td>
+                      <td className="py-4 px-4 text-[10px] font-black text-white/50">{pool.tvl}</td>
+                      <td className="py-4 px-6 text-right">
+                        <button onClick={() => { setTokenA(pool.tokens[0]); setTokenB(pool.tokens[1]); setView('add'); setRecentTxHash(null); setHideToggle(false); }} className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[9px] font-black uppercase hover:bg-white hover:text-black transition-all active:scale-95 shadow-lg shadow-black/20">Add / Remove</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

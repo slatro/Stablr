@@ -261,12 +261,12 @@ export const TransactionHistory = () => {
                       </div>
                       <span className={`text-[11px] font-black uppercase tracking-widest ${
                         tx.type.includes('Check-in') ? 'text-blue-400' :
-                        tx.type.includes('Liquidity') ? 'text-indigo-400' :
+                        tx.type.includes('Liquidity') ? 'text-blue-500' :
                         tx.type.includes('Stake') || tx.type.includes('Unstake') ? 'text-purple-400' :
                         tx.type.includes('Approval') ? 'text-cyan-400' :
                         tx.type.includes('Swap') || tx.type.includes('Exchanged') ? 'text-orange-500' :
                         tx.type.includes('Limit') ? 'text-amber-400' :
-                        tx.type.includes('Faucet') ? 'text-indigo-400' :
+                        tx.type.includes('Faucet') ? 'text-blue-500' :
                         'text-white'
                       }`}>{tx.type}</span>
                     </div>
