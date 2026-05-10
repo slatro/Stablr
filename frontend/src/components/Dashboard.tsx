@@ -133,7 +133,11 @@ const AssetRow = ({ asset, balance, price, change24h, onAction }: any) => {
       </td>
       <td className="py-3 md:py-4 px-2 md:px-5 text-right">
         {asset?.symbol === 'EURC' ? (
-          <span className="text-[7px] font-black text-white/10 uppercase tracking-widest italic">SOON</span>
+          <div className="flex justify-end pr-2 md:pr-4">
+            <span className="text-[9px] md:text-[11px] font-black text-blue-400/40 uppercase tracking-[0.3em] italic animate-pulse drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]">
+              SOON
+            </span>
+          </div>
         ) : (
           <button
             onClick={() => onAction(asset?.symbol === 'USDC' ? 'stake' : asset)}
