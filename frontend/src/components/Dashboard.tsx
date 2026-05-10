@@ -137,9 +137,9 @@ const AssetRow = ({ asset, balance, price, change24h, onAction }: any) => {
         ) : (
           <button
             onClick={() => onAction(asset?.symbol === 'USDC' ? 'stake' : asset)}
-            className={`px-3 md:px-5 py-1.5 md:py-2 rounded-lg md:rounded-xl border text-[8px] md:text-[10px] font-black uppercase tracking-widest transition-all ${isNative ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/[0.05] border-white/10 text-white/40'}`}
+            className={`px-3 md:px-5 py-1.5 md:py-2 rounded-lg md:rounded-xl border text-[7px] md:text-[8px] font-black uppercase tracking-widest transition-all active:scale-95 ${isNative ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/[0.05] border-white/10 text-white/40'}`}
           >
-            {isNative ? 'STK' : 'TRD'}
+            {isNative ? 'STAKE' : 'TRADE'}
           </button>
         )}
       </td>
