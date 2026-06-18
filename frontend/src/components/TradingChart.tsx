@@ -100,6 +100,38 @@ export const TradingChart = ({ tokenIn, tokenOut }: { tokenIn: any; tokenOut: an
       setLoading(true);
       setError(false);
       
+      const runFallback = () => {
+        const pIn = prices[symIn]?.price || 1;
+        const pOut = prices[symOut]?.price || 1;
+        const currentRatio = pIn / pOut;
+        
+        const hourlySeed = Math.floor(Date.now() / 3600000);
+        const pairHash = symIn.split('').reduce((a,b,i)=>a+b.charCodeAt(0)*(i+1),0) + 
+                         symOut.split('').reduce((a,b,i)=>a+b.charCodeAt(0)*(i+10),0);
+        
+        let lastP = currentRatio;
+        const pts = Array.from({ length: 48 }, (_, i) => {
+          const seed = hourlySeed + pairHash + i;
+          // Base walk + Sine wave for "wavy" look
+          const walk = (seededRandom(seed) * 0.004 - 0.002);
+          const wave = Math.sin(i / 3) * 0.001; 
+          const change = 1 + walk + wave;
+          
+          lastP = lastP * change;
+          return {
+            ts: (hourlySeed * 3600000) - (48 - i) * 3600000,
+            price: lastP
+          };
+        });
+        
+        const correction = currentRatio / pts[pts.length - 1].price;
+        const normalizedPts = pts.map(p => ({ ...p, price: p.price * correction }));
+
+        setHistory(normalizedPts);
+        setCachedHistory(cacheKey, normalizedPts);
+        setLoading(false);
+      };
+
       try {
         const sIn = symIn.replace(/^a/, '').replace('C', '');
         const sOut = symOut.replace(/^a/, '').replace('C', ''); 
@@ -120,41 +152,11 @@ export const TradingChart = ({ tokenIn, tokenOut }: { tokenIn: any; tokenOut: an
           setCachedHistory(cacheKey, pts);
           setLoading(false);
         } else {
-          // DETERMINISTIC FALLBACK (Seeded Random Walk)
-          const pIn = prices[symIn]?.price || 1;
-          const pOut = prices[symOut]?.price || 1;
-          const currentRatio = pIn / pOut;
-          
-          const hourlySeed = Math.floor(Date.now() / 3600000);
-          const pairHash = symIn.split('').reduce((a,b,i)=>a+b.charCodeAt(0)*(i+1),0) + 
-                           symOut.split('').reduce((a,b,i)=>a+b.charCodeAt(0)*(i+10),0);
-          
-          let lastP = currentRatio;
-          const pts = Array.from({ length: 48 }, (_, i) => {
-            const seed = hourlySeed + pairHash + i;
-            // Base walk + Sine wave for "wavy" look
-            const walk = (seededRandom(seed) * 0.004 - 0.002);
-            const wave = Math.sin(i / 3) * 0.001; 
-            const change = 1 + walk + wave;
-            
-            lastP = lastP * change;
-            return {
-              ts: (hourlySeed * 3600000) - (48 - i) * 3600000,
-              price: lastP
-            };
-          });
-          
-          const correction = currentRatio / pts[pts.length - 1].price;
-          const normalizedPts = pts.map(p => ({ ...p, price: p.price * correction }));
-
-          setHistory(normalizedPts);
-          setCachedHistory(cacheKey, normalizedPts);
-          setLoading(false);
+          runFallback();
         }
       } catch (err) {
         if (mounted) {
-          setLoading(false);
-          setError(true);
+          runFallback();
         }
       }
     };

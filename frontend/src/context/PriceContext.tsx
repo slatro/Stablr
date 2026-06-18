@@ -65,17 +65,23 @@ export const PriceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const formatPrice = (val: number, decimals: number = 4) => parseFloat(val.toFixed(decimals));
 
       try {
-        const fsyms = 'USDC,EUR,GBP,TRY,JPY';
-        const res = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=USD&tsyms=${fsyms}`);
-        const data = await res.json();
+        const res = await fetch('https://api.coinbase.com/v2/exchange-rates?currency=USD');
+        const json = await res.json();
+        const rates = json?.data?.rates;
         
-        if (data) {
+        if (rates) {
           const getChange = () => (Math.random() * 0.4 - 0.2).toFixed(2) + '%';
           newPrices.USDC = newPrices.aUSDC = { price: 1.0000, change24h: '+0.00%' };
-          if (data.EUR) newPrices.EURC = newPrices.aEURC = { price: formatPrice(1/data.EUR), change24h: getChange() };
-          if (data.GBP) newPrices.GBPC = newPrices.aGBPC = { price: formatPrice(1/data.GBP), change24h: getChange() };
-          if (data.TRY) newPrices.TRYC = newPrices.aTRYC = { price: formatPrice(1/data.TRY), change24h: getChange() };
-          if (data.JPY) newPrices.JPYC = newPrices.aJPYC = { price: formatPrice(1/data.JPY, 5), change24h: getChange() };
+          
+          const eur = parseFloat(rates.EUR);
+          const gbp = parseFloat(rates.GBP);
+          const tryRate = parseFloat(rates.TRY);
+          const jpy = parseFloat(rates.JPY);
+
+          if (eur) newPrices.EURC = newPrices.aEURC = { price: formatPrice(1/eur), change24h: getChange() };
+          if (gbp) newPrices.GBPC = newPrices.aGBPC = { price: formatPrice(1/gbp), change24h: getChange() };
+          if (tryRate) newPrices.TRYC = newPrices.aTRYC = { price: formatPrice(1/tryRate), change24h: getChange() };
+          if (jpy) newPrices.JPYC = newPrices.aJPYC = { price: formatPrice(1/jpy, 5), change24h: getChange() };
         }
       } catch (e) {
         console.error("Price fetch error:", e);
