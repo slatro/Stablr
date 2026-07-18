@@ -141,7 +141,7 @@ export default function App() {
                        </a>
                     </div>
                   </div>
-                  <div className="text-[8px] font-black text-white/10 uppercase tracking-[0.2em] md:tracking-[0.4em] text-center">© 2026 ARCFX PROTOCOL.</div>
+                  <div className="text-[8px] font-black text-white/10 uppercase tracking-[0.2em] md:tracking-[0.4em] text-center">© 2026 STABLE PROTOCOL.</div>
                 </div>
               </footer>
             </div>

@@ -55,7 +55,7 @@ export const AssetIntelligence = ({ token }: { token: any }) => {
           <div className="h-px bg-white/[0.03]" />
           <div className="flex justify-between items-center text-[10px]">
             <span className="font-bold text-white/20 uppercase">Protocol</span>
-            <span className="font-black text-white/60 uppercase">ArcFX Decentralized</span>
+            <span className="font-black text-white/60 uppercase">Stable Decentralized</span>
           </div>
         </div>
 
@@ -75,7 +75,7 @@ export const AssetIntelligence = ({ token }: { token: any }) => {
       <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex gap-3">
          <Info size={16} className="text-blue-400 shrink-0 mt-0.5" />
          <p className="text-[9px] text-white/40 leading-relaxed font-medium italic">
-           {isAtoken ? "This is an Arc-Collateralized asset. All units are backed 1:1 by institutional-grade liquidity reserves on the ArcFX protocol." : "This is a native testnet asset for simulation purposes."}
+           {isAtoken ? "This is an Arc-Collateralized asset. All units are backed 1:1 by institutional-grade liquidity reserves on the Stable protocol." : "This is a native testnet asset for simulation purposes."}
          </p>
       </div>
     </div>

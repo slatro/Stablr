@@ -18,7 +18,7 @@ export const Logo = ({ size, hideText = false }: LogoProps) => (
     >
       <img 
         src="/logo.png" 
-        alt="ArcFX Logo"
+        alt="Stable Logo"
         className="w-full h-full object-contain"
       />
     </div>
@@ -26,7 +26,7 @@ export const Logo = ({ size, hideText = false }: LogoProps) => (
     {!hideText && (
       <div className="flex items-baseline gap-1 pt-1 whitespace-nowrap">
         <span 
-          className="text-xl md:text-2xl font-light tracking-[0.25em] uppercase font-sans leading-none"
+          className="text-xl md:text-2xl font-black tracking-[0.3em] uppercase font-sans leading-none"
           style={{
             background: 'linear-gradient(to bottom, #ffffff, #94a3b8, #64748b)',
             WebkitBackgroundClip: 'text',
@@ -34,18 +34,7 @@ export const Logo = ({ size, hideText = false }: LogoProps) => (
             backgroundClip: 'text'
           }}
         >
-          ARC
-        </span>
-        <span 
-          className="text-xl md:text-2xl font-bold tracking-[0.15em] uppercase font-sans leading-none"
-          style={{
-            background: 'linear-gradient(to bottom, #93c5fd, #3b82f6, #1e40af)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}
-        >
-          FX
+          STABLE
         </span>
       </div>
     )}

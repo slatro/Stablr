@@ -460,7 +460,7 @@ export const SwapCard = ({
         // Simulated Signature-based Limit Order
         try {
           triggerIsland('processing', `Authorizing Order via Signature...`, stableId);
-          const msgToSign = `ArcFX Limit Order\nAction: SELL ${fromAmount} ${tokenIn.symbol}\nTarget: ${limitPrice} ${tokenOut.symbol}\nExpiry: 7 Days\nNonce: ${Date.now()}`;
+          const msgToSign = `Stable Limit Order\nAction: SELL ${fromAmount} ${tokenIn.symbol}\nTarget: ${limitPrice} ${tokenOut.symbol}\nExpiry: 7 Days\nNonce: ${Date.now()}`;
 
           signMessage({ message: msgToSign }, {
             onSuccess: (sig) => {
