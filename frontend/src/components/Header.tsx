@@ -66,7 +66,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
       setLocalLastMint(now);
       localStorage.setItem(`faucet_${address}`, now.toString());
       setShowSuccess(true);
-      triggerIsland('success', 'Stable Assets Claimed', faucetHash, { type: 'Faucet Claim', asset: 'Multiple', amount: '+10' });
+      triggerIsland('success', 'Stablr Assets Claimed', faucetHash, { type: 'Faucet Claim', asset: 'Multiple', amount: '+10' });
       setTimeout(() => {
         setShowSuccess(false);
         if (resetFaucet) resetFaucet();
@@ -229,7 +229,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
                         abi: FAUCET_ABI.abi || FAUCET_ABI,
                         functionName: 'claim',
                       });
-                      triggerIsland('processing', 'Minting Stable Assets...');
+                      triggerIsland('processing', 'Minting Stablr Assets...');
                     }}
                     disabled={!isConnected || isFaucetPending || isFaucetConfirming || inCooldown}
                     className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-2.5 py-1 rounded-md border transition-all duration-700 shadow-lg group ${
@@ -352,7 +352,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
               
               <div className="space-y-4 mb-8">
                 <p className="text-[11px] font-medium text-white/50 leading-relaxed tracking-wide">
-                  Stable is currently in <span className="text-blue-400 font-black italic">BETA TESTNET</span>.
+                  Stablr is currently in <span className="text-blue-400 font-black italic">BETA TESTNET</span>.
                 </p>
                 <p className="text-[11px] font-medium text-white/40 leading-relaxed tracking-wide">
                   For your safety, please ensure you are connecting a <span className="text-white font-black underline decoration-blue-500/50 underline-offset-4">TEST WALLET</span> with no mainnet assets.

@@ -25,7 +25,7 @@ const arcTestnet = {
 } as const;
 
 const config = getDefaultConfig({
-  appName: "Stable Protocol",
+  appName: "Stablr Protocol",
   projectId: "89a92bcf5ff047a59a84b2335a2932ee",
   chains: [arcTestnet],
   transports: {

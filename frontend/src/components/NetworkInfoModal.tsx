@@ -31,7 +31,7 @@ export const NetworkInfoModal = ({ isOpen, onClose, onConfirm }: NetworkInfoModa
         <div className="p-8 pt-10">
           <h2 className="text-2xl font-bold tracking-tight text-white mb-4">Before connecting</h2>
           <p className="text-sm text-white/50 leading-relaxed mb-8">
-            Stable runs on the private Arc Testnet. Your wallet may show warnings when adding this network.
+            Stablr runs on the private Arc Testnet. Your wallet may show warnings when adding this network.
           </p>
 
           {/* Warning Box */}

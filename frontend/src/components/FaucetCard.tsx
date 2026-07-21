@@ -209,7 +209,7 @@ export const FaucetCard = () => {
         />
 
         <ActionBox 
-          title="Stable Faucet"
+          title="Stablr Faucet"
           subtitle="Get Arc Assets Bundle (aUSDC, aEURC...)"
           icon={Droplets}
           onAction={handleFaucet}

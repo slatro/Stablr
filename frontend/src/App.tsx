@@ -144,7 +144,7 @@ export default function App() {
                   </div>
 
                   <div className="flex justify-center md:justify-end text-[8px] font-black text-white/10 uppercase tracking-[0.2em] md:tracking-[0.4em]">
-                    © 2026 STABLE PROTOCOL.
+                    © 2026 STABLR PROTOCOL.
                   </div>
                 </div>
               </footer>

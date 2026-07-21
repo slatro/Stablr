@@ -16,7 +16,7 @@ export const Logo = ({ size, hideText = false }: LogoProps) => (
     >
       <img 
         src="/logo.png" 
-        alt="Stable Logo"
+        alt="Stablr Logo"
         className="w-full h-full object-contain"
       />
     </div>
@@ -32,7 +32,7 @@ export const Logo = ({ size, hideText = false }: LogoProps) => (
             backgroundClip: 'text'
           }}
         >
-          STABLE
+          STABLR
         </span>
       </div>
     )}
