@@ -128,7 +128,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
                   className="text-[6.5px] md:text-[7px] font-black text-blue-400 uppercase tracking-[0.25em] pb-0.5"
                   style={{ textShadow: '0 0 6px rgba(96, 165, 250, 0.6)' }}
                 >
-                  Powered by Arc Network
+                  Live on Arc Testnet
                 </span>
                 <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-blue-400/40 to-transparent" />
               </div>
