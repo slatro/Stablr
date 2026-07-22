@@ -60,11 +60,11 @@ export const ProfileModal = ({ isOpen, onClose, selectedAvatar, setSelectedAvata
   const balances = [
     { symbol: 'USDC', name: 'Native Gas', amount: rawBalNativeUSDC, dec: (decNativeUSDC as number) || 18, icon: TOKEN_ICONS.aUSDC },
     { symbol: 'EURC', name: 'Native Euro', amount: rawBalNativeEURC, dec: 6, icon: TOKEN_ICONS.aEURC },
-    { symbol: 'aUSDC', name: 'Arc Dollar', amount: balAUSDC?.value, dec: 6, icon: TOKEN_ICONS.aUSDC },
-    { symbol: 'aEURC', name: 'Arc Euro', amount: balAEURC?.value, dec: 18, icon: TOKEN_ICONS.aEURC },
-    { symbol: 'aTRYC', name: 'Arc Lira', amount: balATRYC?.value, dec: 18, icon: TOKEN_ICONS.aTRYC },
-    { symbol: 'aGBPC', name: 'Arc Pound', amount: balAGBPC?.value, dec: 18, icon: TOKEN_ICONS.aGBPC },
-    { symbol: 'aJPYC', name: 'Arc Yen', amount: balAJPYC?.value, dec: 18, icon: TOKEN_ICONS.aJPYC },
+    { symbol: 'aUSDC', name: 'Stablr Dollar', amount: balAUSDC?.value, dec: 6, icon: TOKEN_ICONS.aUSDC },
+    { symbol: 'aEURC', name: 'Stablr Euro', amount: balAEURC?.value, dec: 18, icon: TOKEN_ICONS.aEURC },
+    { symbol: 'aTRYC', name: 'Stablr Lira', amount: balATRYC?.value, dec: 18, icon: TOKEN_ICONS.aTRYC },
+    { symbol: 'aGBPC', name: 'Stablr Pound', amount: balAGBPC?.value, dec: 18, icon: TOKEN_ICONS.aGBPC },
+    { symbol: 'aJPYC', name: 'Stablr Yen', amount: balAJPYC?.value, dec: 18, icon: TOKEN_ICONS.aJPYC },
   ];
 
   return (
