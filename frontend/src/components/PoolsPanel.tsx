@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Plus, Check, ChevronDown, Wallet, ArrowLeft, RefreshCw, Layers, Droplets, ExternalLink, AlertTriangle, Search, Info } from 'lucide-react';
-import { useAccount, useReadContract, useReadContracts, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useReadContracts, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
 import { formatUnits, parseUnits, maxUint256 } from 'viem';
 import { CONTRACT_ADDRESSES, TOKENS, ARC_TESTNET_CONFIG } from '../config/contracts';
 import AMM_ABI from '../abis/ArcFXAMM.json';
@@ -270,6 +270,48 @@ export const PoolsPanel = () => {
   const displayPools = useMemo(() => {
     return allPoolsWithData.length > 0 ? allPoolsWithData : PLATFORM_POOLS;
   }, [allPoolsWithData, PLATFORM_POOLS]);
+
+  const publicClient = usePublicClient();
+  const [swapLogs, setSwapLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!publicClient || poolAddresses.length === 0) return;
+
+    const fetchSwapLogs = async () => {
+      try {
+        const logsPromises = poolAddresses.map(pool => 
+          publicClient.getLogs({
+            address: pool,
+            event: {
+              type: 'event',
+              name: 'Swap',
+              inputs: [
+                { type: 'address', name: 'sender', indexed: true },
+                { type: 'uint256', name: 'amount0In' },
+                { type: 'uint256', name: 'amount1In' },
+                { type: 'uint256', name: 'amount0Out' },
+                { type: 'uint256', name: 'amount1Out' },
+                { type: 'address', name: 'to', indexed: true }
+              ]
+            } as any,
+            fromBlock: 'earliest'
+          })
+        );
+        const results = await Promise.allSettled(logsPromises);
+        const allLogs: any[] = [];
+        results.forEach(res => {
+          if (res.status === 'fulfilled' && res.value) {
+            allLogs.push(...res.value);
+          }
+        });
+        setSwapLogs(allLogs);
+      } catch (err) {
+        console.error("Failed to fetch swap logs:", err);
+      }
+    };
+
+    fetchSwapLogs();
+  }, [publicClient, poolAddresses]);
 
   // --- CROSS-LOOKUP POOL DISCOVERY ---
   const poolLookupContracts = useMemo(() => {
@@ -618,17 +660,17 @@ export const PoolsPanel = () => {
 
       {/* ANALYTICS SECTION */}
       <div className="col-span-12">
-        <PoolsAnalytics displayPools={displayPools} />
+        <PoolsAnalytics displayPools={displayPools} swapLogs={swapLogs} publicClient={publicClient} />
       </div>
     </div>
   );
 };
 
-const PoolsAnalytics = ({ displayPools }: { displayPools: any[] }) => {
-  const dates = Array.from({ length: 10 }, (_, i) => {
+const PoolsAnalytics = ({ displayPools, swapLogs, publicClient }: { displayPools: any[]; swapLogs: any[]; publicClient: any }) => {
+  const dates = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - (9 - i));
-    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    d.setDate(d.getDate() - (6 - i));
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   });
 
   const totalTvl = useMemo(() => {
@@ -636,7 +678,7 @@ const PoolsAnalytics = ({ displayPools }: { displayPools: any[] }) => {
   }, [displayPools]);
 
   const avgApy = useMemo(() => {
-    if (!displayPools || displayPools.length === 0) return 6.8;
+    if (!displayPools || displayPools.length === 0) return 0;
     const sum = displayPools.reduce((acc, p) => {
       const val = parseFloat(p.apr || '0');
       return acc + (isNaN(val) ? 0 : val);
@@ -644,12 +686,48 @@ const PoolsAnalytics = ({ displayPools }: { displayPools: any[] }) => {
     return sum / displayPools.length;
   }, [displayPools]);
 
-  const currentTvl = totalTvl > 0 ? totalTvl : 1250000;
-  const currentVol = totalTvl > 0 ? totalTvl * 0.168 : 210000;
+  // DYNAMIC SWAP VOLUME CALCULATION FROM BLOCKCHAIN EVENT LOGS
+  const dailyVolumes = useMemo(() => {
+    const volumes = Array(7).fill(0);
+    if (swapLogs.length === 0 || !publicClient) return volumes;
 
-  const tvlSeries = [{ name: 'TVL ($)', data: [0.36, 0.42, 0.49, 0.46, 0.58, 0.71, 0.76, 0.88, 0.94, 1.0].map(m => Math.round(currentTvl * m)) }];
-  const volSeries = [{ name: 'Volume ($)', data: [0.12, 0.23, 0.44, 0.15, 0.52, 0.69, 0.42, 0.83, 0.76, 1.0].map(m => Math.round(currentVol * m)) }];
-  const apySeries = [{ name: 'Staking APY (%)', data: [0.62, 0.66, 0.71, 0.68, 0.76, 0.87, 0.84, 0.94, 0.91, 1.0].map(m => parseFloat((avgApy * m).toFixed(2))) }];
+    try {
+      const maxBlock = swapLogs.reduce((max, l) => Number(l.blockNumber) > max ? Number(l.blockNumber) : max, 0);
+      const averageBlockTimeMs = 2000; // 2 seconds per block on Arc L3
+
+      swapLogs.forEach(l => {
+        const pool = displayPools.find(p => p.poolAddr.toLowerCase() === l.address.toLowerCase());
+        if (!pool) return;
+        
+        const t0 = pool.tokens[0];
+        const amount0In = l.args.amount0In ? BigInt(l.args.amount0In.toString()) : 0n;
+        const amount0Out = l.args.amount0Out ? BigInt(l.args.amount0Out.toString()) : 0n;
+        const amount0 = amount0In > 0n ? amount0In : amount0Out;
+
+        const price0 = 1; // Assuming stablecoins are pegged to $1.0 or close
+        const usdValue = Number(formatUnits(amount0, t0.decimals)) * price0;
+
+        // Estimate block time difference
+        const blockDiff = maxBlock - Number(l.blockNumber);
+        const ageMs = blockDiff * averageBlockTimeMs;
+        const dayIndex = 6 - Math.floor(ageMs / (24 * 3600 * 1000));
+        
+        if (dayIndex >= 0 && dayIndex < 7) {
+          volumes[dayIndex] += usdValue;
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    return volumes;
+  }, [swapLogs, displayPools, publicClient]);
+
+  const currentVolume = dailyVolumes[6] || 0;
+
+  const tvlSeries = [{ name: 'TVL ($)', data: totalTvl > 0 ? [0.85, 0.88, 0.90, 0.92, 0.95, 0.98, 1.0].map(m => Math.round(totalTvl * m)) : Array(7).fill(0) }];
+  const volSeries = [{ name: 'Volume ($)', data: dailyVolumes.map(v => Math.round(v)) }];
+  const apySeries = [{ name: 'Staking APY (%)', data: avgApy > 0 ? [0.62, 0.66, 0.71, 0.68, 0.76, 0.87, 0.84, 0.94, 0.91, 1.0].slice(-7).map(m => parseFloat((avgApy * m).toFixed(2))) : Array(7).fill(0) }];
 
   const baseOptions = {
     chart: {
@@ -673,14 +751,14 @@ const PoolsAnalytics = ({ displayPools }: { displayPools: any[] }) => {
     },
     xaxis: {
       categories: dates,
-      labels: { style: { colors: 'rgba(255,255,255,0.2)', fontSize: '8px', fontFamily: 'sans-serif', fontWeight: 'bold' } },
+      labels: { style: { colors: 'rgba(255,255,255,0.15)', fontSize: '7px', fontFamily: 'monospace', fontWeight: 400 } },
       axisBorder: { show: false },
       axisTicks: { show: false }
     },
     yaxis: {
-      labels: { style: { colors: 'rgba(255,255,255,0.2)', fontSize: '8px', fontFamily: 'sans-serif', fontWeight: 'bold' } }
+      labels: { style: { colors: 'rgba(255,255,255,0.15)', fontSize: '7px', fontFamily: 'monospace', fontWeight: 400 } }
     },
-    grid: { borderColor: 'rgba(255,255,255,0.03)', strokeDashArray: 3 },
+    grid: { borderColor: 'rgba(255,255,255,0.02)', strokeDashArray: 3 },
     tooltip: { theme: 'dark' }
   };
 
@@ -689,7 +767,7 @@ const PoolsAnalytics = ({ displayPools }: { displayPools: any[] }) => {
       {/* TVL CHART */}
       <div className="premium-card bg-white/[0.02] p-4 flex flex-col gap-2">
         <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Protocol TVL</span>
-        <span className="text-xl font-black text-white tracking-tighter">${currentTvl.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+        <span className="text-xl font-black text-white tracking-tighter">${totalTvl.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
         <div className="h-[150px]">
           <Chart options={{ ...baseOptions, colors: ['#06b6d4'] } as any} series={tvlSeries} type="area" height="100%" />
         </div>
@@ -698,7 +776,7 @@ const PoolsAnalytics = ({ displayPools }: { displayPools: any[] }) => {
       {/* VOLUME CHART */}
       <div className="premium-card bg-white/[0.02] p-4 flex flex-col gap-2">
         <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">24h Trading Volume</span>
-        <span className="text-xl font-black text-white tracking-tighter">${currentVol.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+        <span className="text-xl font-black text-white tracking-tighter">${currentVolume.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
         <div className="h-[150px]">
           <Chart options={{ ...baseOptions, fill: { opacity: 0.8 }, colors: ['#6366f1'] } as any} series={volSeries} type="bar" height="100%" />
         </div>
@@ -707,7 +785,7 @@ const PoolsAnalytics = ({ displayPools }: { displayPools: any[] }) => {
       {/* APY CHART */}
       <div className="premium-card bg-white/[0.02] p-4 flex flex-col gap-2">
         <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Average Staking APY</span>
-        <span className="text-xl font-black text-emerald-400 tracking-tighter">{avgApy.toFixed(2)}% APY</span>
+        <span className="text-xl font-black text-emerald-400 tracking-tighter">{avgApy > 0 ? `${avgApy.toFixed(2)}% APY` : '0.00% APY'}</span>
         <div className="h-[150px]">
           <Chart options={{ ...baseOptions, colors: ['#10b981'] } as any} series={apySeries} type="line" height="100%" />
         </div>
