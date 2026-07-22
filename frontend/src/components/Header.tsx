@@ -115,7 +115,18 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
     const error = faucetError || checkInError || checkInWaitError;
     if (error) {
       setErrorMsg((error as any).shortMessage || error.message);
-      const timer = setTimeout(() => setErrorMsg(null), 5000);
+      
+      if (faucetError) {
+        triggerIsland('error', 'Faucet Claim Failed', (error as any).shortMessage || 'User rejected the request.', { type: 'error' });
+      } else if (checkInError || checkInWaitError) {
+        triggerIsland('error', 'Check-in Failed', (error as any).shortMessage || 'Transaction failed.', { type: 'error' });
+      }
+      
+      const timer = setTimeout(() => {
+        setErrorMsg(null);
+        if (resetFaucet) resetFaucet();
+        if (resetCheckIn) resetCheckIn();
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [faucetError, checkInError, checkInWaitError]);
