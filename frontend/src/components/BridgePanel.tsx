@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ArrowDown, Check, ChevronDown, RefreshCw, AlertCircle, ArrowRightLeft, ExternalLink, Loader2 } from 'lucide-react';
-import { useReadContract, useSwitchChain, useChainId } from 'wagmi';
-import { useAccount, useWriteContract } from '../hooks/web3';
+import { useReadContract, useSwitchChain, useChainId, useWriteContract } from 'wagmi';
+import { useAccount } from '../hooks/web3';
 import { formatUnits, parseUnits } from 'viem';
 import { useNotifications } from '../context/NotificationContext';
 import { triggerIsland } from './TransactionIsland';
@@ -413,9 +413,8 @@ export const BridgePanel = () => {
             <div className="flex flex-col gap-2.5">
               {stepLabels.map(({ key, label }, idx) => {
                 const stepIdx = stepOrder.indexOf(key);
-                const isDone = currentIdx > stepIdx;
-                const isActive = bridgeStep === key;
-                const isPending = currentIdx < stepIdx;
+                const isDone = bridgeStep !== 'error' && currentIdx > stepIdx;
+                const isActive = bridgeStep === key && isBridging;
                 return (
                   <div key={key} className="flex items-center justify-between">
                     <span className={`text-[10px] font-bold transition-colors ${
