@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ArrowDown, Check, ChevronDown, RefreshCw, AlertCircle, ArrowRightLeft, ExternalLink, Zap } from 'lucide-react';
-import { useAccount, useReadContract, useWriteContract, useSwitchChain, useChainId } from 'wagmi';
+import { useReadContract, useSwitchChain, useChainId } from 'wagmi';
+import { useAccount, useWriteContract } from '../hooks/web3';
 import { formatUnits, parseUnits } from 'viem';
 import { useNotifications } from '../context/NotificationContext';
 import { triggerIsland } from './TransactionIsland';
@@ -60,7 +61,7 @@ const CHAINS = [
 const BRIDGE_TREASURY = '0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326';
 
 export const BridgePanel = () => {
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, isSocial } = useAccount();
   const currentChainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { play } = useSound();
@@ -94,7 +95,7 @@ export const BridgePanel = () => {
 
   const { writeContractAsync } = useWriteContract();
 
-  const isCorrectChain = currentChainId === srcChain.chainId;
+  const isCorrectChain = isSocial || currentChainId === srcChain.chainId;
 
   const handleBridge = async () => {
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) return;
