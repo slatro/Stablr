@@ -74,7 +74,7 @@ const CHAINS = [
     chainId: 84532,
     domain: 6,
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-    logo: 'https://avatars.githubusercontent.com/u/108554348?s=200&v=4',
+    logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png',
     explorer: 'https://sepolia.basescan.org/tx'
   },
   {
@@ -83,7 +83,7 @@ const CHAINS = [
     chainId: 421614,
     domain: 3,
     usdc: '0x75faf114eafb1BD239e7be45E73d696117D01309',
-    logo: 'https://avatars.githubusercontent.com/u/84482479?s=200&v=4',
+    logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png',
     explorer: 'https://sepolia.arbiscan.io/tx'
   },
   {
@@ -92,7 +92,7 @@ const CHAINS = [
     chainId: 11155420,
     domain: 2,
     usdc: '0x5fd84259d6f058f24560b3f07e86e21626196723',
-    logo: 'https://avatars.githubusercontent.com/u/45147573?s=200&v=4',
+    logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/optimism/info/logo.png',
     explorer: 'https://sepolia-optimism.etherscan.io/tx'
   },
   {
@@ -101,7 +101,7 @@ const CHAINS = [
     chainId: 11155111,
     domain: 0,
     usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
-    logo: 'https://avatars.githubusercontent.com/u/6250754?s=200&v=4',
+    logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
     explorer: 'https://sepolia.etherscan.io/tx'
   },
 ];
@@ -330,7 +330,7 @@ export const BridgePanel = () => {
                         className="w-full py-2 px-3 flex items-center gap-3 hover:bg-white/5 rounded-xl transition-all"
                       >
                         <div className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
-                          <img src={c.logo} className="w-3.5 h-3.5 object-contain" alt="" />
+                          <img src={c.logo} className="w-4 h-4 object-contain" alt="" />
                         </div>
                         <span className="text-[10px] font-black text-white uppercase tracking-wider whitespace-nowrap">{c.name}</span>
                         {srcChain.id === c.id && <Check size={10} className="text-blue-400 ml-auto shrink-0" />}
