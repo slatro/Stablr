@@ -216,9 +216,21 @@ export const BridgePanel = () => {
                 </div>
               )}
 
-              <span className="text-[10px] font-bold text-white/30 tabular-nums">
-                Balance: {isConnected ? `${formattedBalance} USDC` : '0.00 USDC'}
-              </span>
+              <div className="flex flex-col items-end gap-1 select-none">
+                <span className="text-[10px] font-bold text-white/30 tabular-nums">
+                  Balance: {isConnected ? `${formattedBalance} USDC` : '0.00 USDC'}
+                </span>
+                {isConnected && (
+                  <a 
+                    href="https://faucet.circle.com/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[8px] font-black text-blue-400 hover:text-blue-300 uppercase tracking-widest transition-colors flex items-center gap-1"
+                  >
+                    Get testnet USDC <ExternalLink size={8} />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
