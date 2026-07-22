@@ -83,7 +83,7 @@ const CHAINS = [
     name: 'Arbitrum Sepolia',
     chainId: 421614,
     domain: 3,
-    usdc: '0x75faf114eafb1BD239e7be45E73d696117D01309',
+    usdc: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png',
     bg: '#1B4ADD',
     explorer: 'https://sepolia.arbiscan.io/tx'
@@ -93,7 +93,7 @@ const CHAINS = [
     name: 'Optimism Sepolia',
     chainId: 11155420,
     domain: 2,
-    usdc: '0x5fd84259d6f058f24560b3f07e86e21626196723',
+    usdc: '0x5fd842b3f1aba4a6012d93e155452292f7680957',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/optimism/info/logo.png',
     bg: '#FF0420',
     explorer: 'https://sepolia-optimism.etherscan.io/tx'
@@ -154,6 +154,7 @@ export const BridgePanel = () => {
   const [isBridging, setIsBridging] = useState(false);
   const [bridgeStep, setBridgeStep] = useState<BridgeStep>('idle');
   const [bridgeTxHash, setBridgeTxHash] = useState('');
+  const [arcTxHash, setArcTxHash] = useState('');
   const [attestationStatus, setAttestationStatus] = useState('');
 
   const { data: rawBalance, refetch: refetchBalance } = useReadContract({
@@ -255,13 +256,15 @@ export const BridgePanel = () => {
 
       triggerIsland('processing', 'Minting native USDC on Arc Testnet...');
 
-      await writeContractAsync({
+      const arcHash = await writeContractAsync({
         address: MESSAGE_TRANSMITTER_V2_ARC as `0x${string}`,
         abi: MESSAGE_TRANSMITTER_ABI,
         functionName: 'receiveMessage',
         args: [message as `0x${string}`, attestation as `0x${string}`],
         chainId: ARC_TESTNET_CONFIG.chainId,
       });
+
+      setArcTxHash(arcHash);
 
       // ── SUCCESS ─────────────────────────────────────────────────────────────
       setBridgeStep('success');
@@ -485,16 +488,28 @@ export const BridgePanel = () => {
         )}
 
         {/* BURN TX LINK */}
-        {bridgeTxHash && (
-          <a
-            href={`${srcChain.explorer}/${bridgeTxHash}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 text-[9px] font-black text-blue-400 hover:text-blue-300 uppercase tracking-widest transition-colors"
-          >
-            View Burn Tx on {srcChain.name} Explorer <ExternalLink size={12} />
-          </a>
-        )}
+        <div className="flex flex-col gap-2">
+          {bridgeTxHash && (
+            <a
+              href={`${srcChain.explorer}/${bridgeTxHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 text-[9px] font-black text-blue-400 hover:text-blue-300 uppercase tracking-widest transition-colors"
+            >
+              View Burn Tx on {srcChain.name} Explorer <ExternalLink size={12} />
+            </a>
+          )}
+          {arcTxHash && (
+            <a
+              href={`${ARC_TESTNET_CONFIG.blockExplorerUrl}/tx/${arcTxHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 text-[9px] font-black text-emerald-400 hover:text-emerald-300 uppercase tracking-widest transition-colors"
+            >
+              View Mint Tx on ArcScan <ExternalLink size={12} />
+            </a>
+          )}
+        </div>
 
         {/* DISCLOSURE */}
         <div className="flex items-start gap-2 text-[10px] font-bold text-white/20 uppercase tracking-wide leading-relaxed p-1">

@@ -43,17 +43,19 @@ export const ProfileModal = ({ isOpen, onClose, selectedAvatar, setSelectedAvata
     localStorage.setItem('arc_profile_name', userName);
   }, [userName]);
 
-  const { data: rawBalNativeUSDC } = useReadContract({ address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined });
-  const { data: decNativeUSDC } = useReadContract({ address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'decimals' });
-  
-  const { data: rawBalNativeEURC } = useReadContract({ address: CONTRACT_ADDRESSES.EURC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined });
-  const { data: decNativeEURC } = useReadContract({ address: CONTRACT_ADDRESSES.EURC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'decimals' });
+  const ARC_CHAIN_ID = 5042002;
 
-  const { data: balAUSDC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aUSDC as `0x${string}` });
-  const { data: balAEURC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aEURC as `0x${string}` });
-  const { data: balATRYC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aTRYC as `0x${string}` });
-  const { data: balAGBPC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aGBPC as `0x${string}` });
-  const { data: balAJPYC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aJPYC as `0x${string}` });
+  const { data: rawBalNativeUSDC } = useReadContract({ address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined, chainId: ARC_CHAIN_ID });
+  const { data: decNativeUSDC } = useReadContract({ address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'decimals', chainId: ARC_CHAIN_ID });
+  
+  const { data: rawBalNativeEURC } = useReadContract({ address: CONTRACT_ADDRESSES.EURC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined, chainId: ARC_CHAIN_ID });
+  const { data: decNativeEURC } = useReadContract({ address: CONTRACT_ADDRESSES.EURC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'decimals', chainId: ARC_CHAIN_ID });
+
+  const { data: balAUSDC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aUSDC as `0x${string}`, chainId: ARC_CHAIN_ID });
+  const { data: balAEURC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aEURC as `0x${string}`, chainId: ARC_CHAIN_ID });
+  const { data: balATRYC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aTRYC as `0x${string}`, chainId: ARC_CHAIN_ID });
+  const { data: balAGBPC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aGBPC as `0x${string}`, chainId: ARC_CHAIN_ID });
+  const { data: balAJPYC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aJPYC as `0x${string}`, chainId: ARC_CHAIN_ID });
 
   if (!isOpen) return null;
 

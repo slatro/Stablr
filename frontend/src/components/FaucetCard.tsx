@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Droplets, Clock, Trophy, MousePointer2 } from 'lucide-react';
-import { useReadContract, useWaitForTransactionReceipt } from 'wagmi';
-import { useAccount, useWriteContract } from '../hooks/web3';
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { useAccount } from '../hooks/web3';
 import { CONTRACT_ADDRESSES, ARC_TESTNET_CONFIG } from '../config/contracts';
 import FAUCET_ABI from '../abis/ArcMultiFaucet.json';
 import POINTS_ABI from '../abis/ArcPoints.json';
@@ -183,6 +183,7 @@ export const FaucetCard = () => {
       address: CONTRACT_ADDRESSES.MULTI_FAUCET as `0x${string}`,
       abi: FAUCET_ABI.abi as any,
       functionName: 'claim',
+      chainId: ARC_TESTNET_CONFIG.chainId,
     });
   };
 
@@ -191,6 +192,7 @@ export const FaucetCard = () => {
       address: CONTRACT_ADDRESSES.ARC_POINTS as `0x${string}`,
       abi: POINTS_ABI.abi as any,
       functionName: 'checkIn',
+      chainId: ARC_TESTNET_CONFIG.chainId,
     });
   };
 
