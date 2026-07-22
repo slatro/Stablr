@@ -314,7 +314,7 @@ export const BridgePanel = () => {
           <ArrowRightLeft className="text-blue-500 animate-pulse" size={24} /> USDC Bridge
         </h2>
         <span className="text-[8px] md:text-[9.5px] font-black text-white/20 uppercase tracking-[0.15em] whitespace-nowrap block text-center md:text-left">
-          Powered by Circle CCTP V2 — Real on-chain burn &amp; mint
+          Powered by Circle CCTP V2 | Real on-chain burn &amp; mint
         </span>
       </div>
 
@@ -522,10 +522,7 @@ export const BridgePanel = () => {
         {/* DISCLOSURE */}
         <div className="flex items-start gap-2 text-[10px] font-bold text-white/20 uppercase tracking-wide leading-relaxed p-1">
           <AlertCircle size={14} className="shrink-0 text-white/20 mt-0.5" />
-          <span>
-            Real CCTP V2 bridge: USDC is burned on source chain, attested by Circle, and native USDC is minted on Arc Testnet.
-            Attestation typically takes 2–5 minutes.
-          </span>
+          <span>CCTP V2 burns USDC on source and mints native USDC on Arc Testnet. Circle attestation takes 2-5 minutes.</span>
         </div>
 
       </div>
