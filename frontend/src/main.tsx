@@ -7,6 +7,7 @@ import "./styles.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultConfig, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { WagmiProvider, http } from "wagmi";
+import { baseSepolia, arbitrumSepolia, optimismSepolia, sepolia } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ARC_TESTNET_CONFIG } from "./config/contracts";
 import { PriceProvider } from "./context/PriceContext";
@@ -29,9 +30,13 @@ import { socialWalletConnector } from "./config/socialWalletConnector";
 const config = getDefaultConfig({
   appName: "Stablr Protocol",
   projectId: "89a92bcf5ff047a59a84b2335a2932ee",
-  chains: [arcTestnet],
+  chains: [arcTestnet, baseSepolia, arbitrumSepolia, optimismSepolia, sepolia],
   transports: {
     [arcTestnet.id]: http(ARC_TESTNET_CONFIG.rpcUrl),
+    [baseSepolia.id]: http(),
+    [arbitrumSepolia.id]: http(),
+    [optimismSepolia.id]: http(),
+    [sepolia.id]: http(),
   },
 });
 

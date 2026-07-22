@@ -123,7 +123,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
         <div className="w-full px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 py-2 md:py-0 min-h-[80px] md:min-h-[76px]">
           {/* TOP ROW: LOGO & WALLET ON MOBILE */}
           <div className="flex items-center justify-between w-full md:w-auto gap-4">
-            <div className="flex flex-col py-1">
+            <div className="flex flex-col py-1 h-[56px] justify-center overflow-visible select-none">
               <Logo showSubtitle />
             </div>
             

@@ -7,12 +7,14 @@ interface LogoProps {
 }
 
 export const Logo = ({ size, hideText = false, showSubtitle = false }: LogoProps) => (
-  <div className="flex items-center gap-3.5 group cursor-pointer shrink-0">
+  <div className="flex items-center gap-3.5 group cursor-pointer shrink-0 h-[56px] overflow-visible">
     <div 
-      className="relative flex items-center justify-center shrink-0"
+      className="relative flex items-center justify-center shrink-0 overflow-visible"
       style={{ 
-        width: size ? `${size * 4}px` : '56px', 
-        height: size ? `${size * 4}px` : '56px'
+        width: size ? `${size * 8}px` : '96px', 
+        height: size ? `${size * 8}px` : '96px',
+        marginTop: '-12px',
+        marginBottom: '-12px'
       }}
     >
       <img 
