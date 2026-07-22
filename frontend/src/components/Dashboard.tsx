@@ -1,7 +1,8 @@
 import React, { useMemo, useEffect } from 'react';
 import { Wallet, TrendingUp, Zap, ShieldCheck, ArrowUpRight, ArrowDownRight, Search, Filter, Loader2, CheckCircle2, Layers } from 'lucide-react';
 import { TOKENS, CONTRACT_ADDRESSES } from '../config/contracts';
-import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContracts, useReadContract } from 'wagmi';
+import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
+import { useSequentialReadContracts as useReadContracts } from '../hooks/useSequentialReadContracts';
 import { parseUnits, formatUnits } from 'viem';
 import { usePrices } from '../context/PriceContext';
 import { PortfolioChart } from './PortfolioChart';
