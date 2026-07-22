@@ -155,7 +155,7 @@ export const FaucetCard = () => {
       notify({ 
         type: 'success', 
         title: 'Check-in Confirmed', 
-        message: 'You have earned +50 Arc Points!',
+        message: 'You have earned +50 Stablr Points!',
         link: `${ARC_TESTNET_CONFIG.blockExplorerUrl}/tx/${pointsHash}`
       });
       refetchPoints();

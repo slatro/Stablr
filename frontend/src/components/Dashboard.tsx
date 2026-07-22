@@ -63,7 +63,7 @@ const StatCard = ({ title, value, change, icon: Icon, color, imageIcon, glowColo
   <div className={`glass-frame px-4 py-3 flex items-center gap-4 group hover:border-white/20 transition-all duration-700 relative overflow-hidden h-[72px] ${isSpecial ? 'border-blue-400/40 bg-blue-400/[0.08]' : ''}`}>
     <div className="absolute top-0 right-0 w-16 h-16 bg-white/[0.02] rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-700" />
     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xl border border-white/5 ${color}`}>
-      {title === "ARC POINTS" ? <div className="animate-bounce-slow"><AirdropIcon /></div> : <Icon size={20} />}
+      {title === "STABLR POINTS" ? <div className="animate-bounce-slow"><AirdropIcon /></div> : <Icon size={20} />}
     </div>
     <div className="flex flex-col flex-1 min-w-0 justify-center">
       <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] truncate mb-0.5">{title}</span>
@@ -529,7 +529,7 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
     <div className="w-full space-y-8 px-0 md:px-2">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 px-2 md:px-0">
         <StatCard
-          title="ARC POINTS"
+          title="STABLR POINTS"
           value={isAnyActionPending ? '...' : (userPoints !== undefined ? (Number(userPoints) + localPointsOffset).toString() : '...')}
           isSpecial={true}
           color="bg-blue-500/10 text-blue-400"

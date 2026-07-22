@@ -92,9 +92,9 @@ export const TransactionHistory = () => {
             const hash = l.transactionHash;
             // Point Events
             if (idx === 0 && l.args.user?.toLowerCase() === userAddr) {
-              allLogs.push({ id: `p-${hash}-${l.logIndex}`, type: l.args.reason || 'Points Reward', asset: 'ARC POINTS', amount: `+${l.args.amount.toString()}`, status: 'Confirmed', hash, timestamp: Date.now() - 60000 });
+              allLogs.push({ id: `p-${hash}-${l.logIndex}`, type: l.args.reason || 'Points Reward', asset: 'STABLR POINTS', amount: `+${l.args.amount.toString()}`, status: 'Confirmed', hash, timestamp: Date.now() - 60000 });
             } else if (idx === 1 && l.args.user?.toLowerCase() === userAddr) {
-              allLogs.push({ id: `c-${hash}-${l.logIndex}`, type: 'Daily Check-in', asset: 'ARC POINTS', amount: `+${l.args.pointsEarned.toString()}`, status: 'Confirmed', hash, timestamp: Number(l.args.timestamp) * 1000 });
+              allLogs.push({ id: `c-${hash}-${l.logIndex}`, type: 'Daily Check-in', asset: 'STABLR POINTS', amount: `+${l.args.pointsEarned.toString()}`, status: 'Confirmed', hash, timestamp: Number(l.args.timestamp) * 1000 });
             } 
             // Token Transfers (USDC/EURC/TRYC)
             else if (idx >= 2 && idx < 5) {
@@ -182,7 +182,7 @@ export const TransactionHistory = () => {
         const newTx: Transaction = {
           id: `local-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           type: type || 'Platform Action',
-          asset: asset || (type === 'check-in' ? 'ARC POINTS' : 'Token'),
+          asset: asset || (type === 'check-in' ? 'STABLR POINTS' : 'Token'),
           amount: amount || (type === 'check-in' ? '+50' : 'Confirmed'),
           status: 'Confirmed',
           hash: txHash || `0x-tmp-${Date.now()}`,
@@ -273,7 +273,7 @@ export const TransactionHistory = () => {
                   </td>
                   <td className="px-4 py-5">
                     <span className={`text-[11px] font-black uppercase tracking-tighter ${
-                      tx.asset === 'ARC POINTS' ? 'text-blue-400' : 'text-white'
+                      tx.asset === 'STABLR POINTS' ? 'text-blue-400' : 'text-white'
                     }`}>{tx.asset}</span>
                   </td>
                   <td className="px-4 py-5 text-center">

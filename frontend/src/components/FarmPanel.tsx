@@ -124,7 +124,7 @@ export const FarmPanel: React.FC = () => {
 
   const handleHarvest = () => {
     if (earnedArc <= 0n) return;
-    const tid = notify({ type: 'loading', title: 'Claiming Points', message: `Registering Arc Points to your account...` });
+    const tid = notify({ type: 'loading', title: 'Claiming Points', message: `Registering Stablr Points to your account...` });
     // Deposit 0 is the standard way to harvest in MasterChef
     writeAction({
       address: CONTRACT_ADDRESSES.FARM as `0x${string}`,
@@ -134,7 +134,7 @@ export const FarmPanel: React.FC = () => {
     }, {
       onSuccess: (hash) => {
         setActionTx(hash);
-        notify({ type: 'success', title: 'Points Claimed', message: 'Arc Points successfully registered!' });
+        notify({ type: 'success', title: 'Points Claimed', message: 'Stablr Points successfully registered!' });
         dismiss(tid);
       },
       onError: (err) => {
@@ -169,7 +169,7 @@ export const FarmPanel: React.FC = () => {
     <div className="w-full max-w-6xl mx-auto flex flex-col gap-10 animate-fade-in py-4 px-2">
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Yield Farm</h1>
-        <p className="text-xs font-bold text-white/20 uppercase tracking-[0.2em]">Stake LP tokens to farm Arc Points at 10 Pts/sec.</p>
+        <p className="text-xs font-bold text-white/20 uppercase tracking-[0.2em]">Stake LP tokens to farm Stablr Points at 10 Pts/sec.</p>
       </div>
 
       {!isConnected ? (
@@ -177,7 +177,7 @@ export const FarmPanel: React.FC = () => {
             <Sprout className="text-white/10" size={48} />
             <div className="flex flex-col gap-1 text-center">
               <span className="text-xs font-black text-white/40 uppercase tracking-widest">Wallet Disconnected</span>
-              <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]">Connect your wallet to farm Arc Points.</p>
+              <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]">Connect your wallet to farm Stablr Points.</p>
             </div>
          </div>
       ) : (
@@ -192,7 +192,7 @@ export const FarmPanel: React.FC = () => {
                 <Pickaxe className="text-blue-400" size={24} />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-black text-white uppercase tracking-widest">Arc Points Earned</span>
+                <span className="text-sm font-black text-white uppercase tracking-widest">Stablr Points Earned</span>
                 <span className="text-xs font-bold text-white/40">Real-time loyalty points</span>
               </div>
             </div>
