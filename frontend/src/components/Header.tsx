@@ -34,23 +34,15 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
     localStorage.setItem('arc_profile_avatar', url);
   };
 
-  const { data: rawUsdcBalance } = useReadContract({
-    address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`,
-    abi: ERC20_ABI.abi || ERC20_ABI,
-    functionName: 'balanceOf',
-    args: address ? [address] : undefined,
+  const { data: rawUsdcBalance } = useBalance({
+    address,
     chainId: ARC_TESTNET_CONFIG.chainId,
     query: { enabled: !!address, refetchInterval: 5000 }
   });
 
-  const { data: usdcDecimals } = useReadContract({
-    address: CONTRACT_ADDRESSES.USDC_NATIVE as `0x${string}`,
-    abi: ERC20_ABI.abi || ERC20_ABI,
-    functionName: 'decimals',
-    chainId: ARC_TESTNET_CONFIG.chainId,
-  });
-
-  const formattedNative = rawUsdcBalance !== undefined ? parseFloat(formatUnits(rawUsdcBalance as bigint, (usdcDecimals as number) || 18)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00';
+  const formattedNative = rawUsdcBalance !== undefined 
+    ? parseFloat(formatUnits(rawUsdcBalance.value, rawUsdcBalance.decimals || 18)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+    : '0.00';
 
   // Faucet Logic
   const [localLastMint, setLocalLastMint] = useState<number>(0);

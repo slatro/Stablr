@@ -198,13 +198,25 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
   const prices = priceContext?.prices || {};
 
   const balanceContracts = useMemo(() => {
-    return TOKENS.map(t => ({
-      address: t.addr as `0x${string}`,
-      abi: ERC20_ABI.abi || ERC20_ABI as any,
-      functionName: 'balanceOf',
-      args: address ? [address] : undefined,
-      chainId: (CONTRACT_ADDRESSES as any).ARC_CHAIN_ID || 5042002
-    }));
+    return TOKENS.map(t => {
+      // Native tokens are fetched via separate hooks (usdcNativeBal, eurcNativeBal).
+      // We return a dummy safe call for them to keep the array length and indexing aligned.
+      if (t.symbol === 'USDC' || t.symbol === 'EURC') {
+        return {
+          address: CONTRACT_ADDRESSES.aUSDC as `0x${string}`,
+          abi: ERC20_ABI.abi || ERC20_ABI as any,
+          functionName: 'decimals',
+          chainId: 5042002
+        };
+      }
+      return {
+        address: t.addr as `0x${string}`,
+        abi: ERC20_ABI.abi || ERC20_ABI as any,
+        functionName: 'balanceOf',
+        args: address ? [address] : undefined,
+        chainId: 5042002
+      };
+    });
   }, [address]);
 
   const { data: balances } = useReadContracts({
