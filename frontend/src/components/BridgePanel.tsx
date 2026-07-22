@@ -74,7 +74,8 @@ const CHAINS = [
     chainId: 84532,
     domain: 6,
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-    logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/base/info/logo.png',
+    logo: 'https://raw.githubusercontent.com/base-org/brand-kit/001c0e9b40a67799ebe0418671ac4e02a0c683ce/logo/symbol/Base_Symbol_Blue.svg',
+    bg: '#0052FF',
     explorer: 'https://sepolia.basescan.org/tx'
   },
   {
@@ -84,6 +85,7 @@ const CHAINS = [
     domain: 3,
     usdc: '0x75faf114eafb1BD239e7be45E73d696117D01309',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/arbitrum/info/logo.png',
+    bg: '#1B4ADD',
     explorer: 'https://sepolia.arbiscan.io/tx'
   },
   {
@@ -93,6 +95,7 @@ const CHAINS = [
     domain: 2,
     usdc: '0x5fd84259d6f058f24560b3f07e86e21626196723',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/optimism/info/logo.png',
+    bg: '#FF0420',
     explorer: 'https://sepolia-optimism.etherscan.io/tx'
   },
   {
@@ -102,6 +105,7 @@ const CHAINS = [
     domain: 0,
     usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
     logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
+    bg: '#627EEA',
     explorer: 'https://sepolia.etherscan.io/tx'
   },
 ];
@@ -319,7 +323,9 @@ export const BridgePanel = () => {
                   disabled={isBridging}
                   className="flex items-center gap-3 bg-white/5 px-3 py-2 rounded-xl border border-white/10 hover:bg-white/10 transition-all group"
                 >
-                  <img src={srcChain.logo} className="w-5 h-5 object-contain shrink-0" alt="" />
+                  <div className="w-7 h-7 rounded-xl overflow-hidden flex items-center justify-center shrink-0" style={{ background: srcChain.bg }}>
+                    <img src={srcChain.logo} className="w-5 h-5 object-contain" alt="" />
+                  </div>
                   <span className="text-xs font-black text-white uppercase tracking-wider">{srcChain.name}</span>
                   <ChevronDown size={14} className="text-white/30 group-hover:text-white transition-colors" />
                 </button>
@@ -332,7 +338,9 @@ export const BridgePanel = () => {
                         onClick={() => { setSrcChain(c); setIsSelectOpen(false); }}
                         className="w-full py-2 px-3 flex items-center gap-3 hover:bg-white/5 rounded-xl transition-all"
                       >
-                        <img src={c.logo} className="w-5 h-5 object-contain shrink-0" alt="" />
+                        <div className="w-7 h-7 rounded-xl overflow-hidden flex items-center justify-center shrink-0" style={{ background: c.bg }}>
+                          <img src={c.logo} className="w-5 h-5 object-contain" alt="" />
+                        </div>
                         <span className="text-[10px] font-black text-white uppercase tracking-wider whitespace-nowrap">{c.name}</span>
                         {srcChain.id === c.id && <Check size={10} className="text-blue-400 ml-auto shrink-0" />}
                       </button>
