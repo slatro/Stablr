@@ -208,6 +208,11 @@ export const BridgePanel = () => {
       setBridgeStep('burn');
       triggerIsland('processing', 'Burning USDC via CCTP...');
 
+      // CCTP V2 relay fee: 0.5% of amount, minimum 0.001 USDC
+      const maxFee = parsedAmount / BigInt(200) > BigInt(1000)
+        ? parsedAmount / BigInt(200)
+        : BigInt(1000);
+
       const burnTxHash = await writeContractAsync({
         address: TOKEN_MESSENGER_V2 as `0x${string}`,
         abi: TOKEN_MESSENGER_ABI,
@@ -218,7 +223,7 @@ export const BridgePanel = () => {
           mintRecipient,          // bytes32 recipient
           srcChain.usdc as `0x${string}`,  // burnToken
           '0x0000000000000000000000000000000000000000000000000000000000000000' as `0x${string}`, // any caller
-          BigInt(0),              // maxFee (0 = no hook fee)
+          maxFee,                 // 0.5% relay fee in USDC
           500,                    // minFinalityThreshold (fast finality)
         ],
         chainId: srcChain.chainId,
