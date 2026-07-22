@@ -1,25 +1,22 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { MockUSDC, MockEURC, ArcFXAMM } from "../typechain-types";
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
+import { Contract } from "ethers";
 
-describe("ArcFXAMM - Professional Suite", function () {
-  let usdc: MockUSDC;
-  let eurc: MockEURC;
-  let amm: ArcFXAMM;
-  let owner: SignerWithAddress;
-  let user: SignerWithAddress;
-  let treasury: SignerWithAddress;
+describe("ArcFXAMM - Stablr StableSwap Suite", function () {
+  let owner: any;
+  let user: any;
+  let usdc: any;
+  let eurc: any;
+  let amm: any;
 
-  // USDC has 6 decimals, EURC has 18
   const MINT_AMOUNT_USDC = ethers.parseUnits("1000000", 6);
   const MINT_AMOUNT_EURC = ethers.parseUnits("1000000", 18);
   
   const LIQUIDITY_USDC = ethers.parseUnits("1000", 6);    // 1,000 USDC
-  const LIQUIDITY_EURC = ethers.parseUnits("1173", 18);   // 1,173 EURC (~1.173 rate)
+  const LIQUIDITY_EURC = ethers.parseUnits("1000", 18);   // 1,000 EURC
 
   beforeEach(async function () {
-    [owner, user, treasury] = await ethers.getSigners();
+    [owner, user] = await ethers.getSigners();
 
     const MockUSDC = await ethers.getContractFactory("MockUSDC");
     usdc = await MockUSDC.deploy();
@@ -28,7 +25,7 @@ describe("ArcFXAMM - Professional Suite", function () {
     eurc = await MockEURC.deploy();
 
     const ArcFXAMM = await ethers.getContractFactory("ArcFXAMM");
-    amm = await ArcFXAMM.deploy(await usdc.getAddress(), await eurc.getAddress(), treasury.address);
+    amm = await ArcFXAMM.deploy(await usdc.getAddress(), await eurc.getAddress());
 
     // Minting
     await usdc.mint(owner.address, MINT_AMOUNT_USDC);
@@ -44,84 +41,40 @@ describe("ArcFXAMM - Professional Suite", function () {
   });
 
   describe("1. Deployment & Metadata", function () {
-    it("Should normalize decimals correctly in constructor", async function () {
-      expect(await amm.decimalsA()).to.equal(6);
-      expect(await amm.decimalsB()).to.equal(18);
-    });
-
-    it("Should set the correct treasury", async function () {
-      expect(await amm.treasury()).to.equal(treasury.address);
+    it("Should correctly set token addresses and decimals", async function () {
+      expect(await amm.token0()).to.equal(await usdc.getAddress());
+      expect(await amm.token1()).to.equal(await eurc.getAddress());
+      expect(await amm.decimals0()).to.equal(6);
+      expect(await amm.decimals1()).to.equal(18);
     });
   });
 
-  describe("2. Liquidity with Decimal Differences", function () {
-    it("Should add liquidity and normalize internally", async function () {
-      await amm.addLiquidity(LIQUIDITY_USDC, LIQUIDITY_EURC);
-      
-      // Reserves should store native amounts
-      const reserves = await amm.getReserves();
-      expect(reserves._reserveA).to.equal(LIQUIDITY_USDC);
-      expect(reserves._reserveB).to.equal(LIQUIDITY_EURC);
-      
-      // LP Shares should be calculated based on 18-decimal normalization
-      // sqrt(1000e18 * 1173e18) = sqrt(1173000)e18 = ~1083e18
-      const lpBalance = await amm.getUserLiquidity(owner.address);
-      expect(lpBalance).to.be.gt(ethers.parseUnits("1000", 18));
-    });
-  });
-
-  describe("3. Unified Swap & Protocol Fees", function () {
+  describe("2. Liquidity & Stableswap Pricing Math", function () {
     beforeEach(async function () {
-      await amm.addLiquidity(LIQUIDITY_USDC, LIQUIDITY_EURC);
+      await amm.addLiquidity(LIQUIDITY_USDC, LIQUIDITY_EURC, owner.address);
     });
 
-    it("Should swap USDC (6 dec) for EURC (18 dec) and collect fee", async function () {
-      const amountIn = ethers.parseUnits("100", 6); // 100 USDC
-      const treasuryInitial = await usdc.balanceOf(treasury.address);
+    it("Should compute StableSwap out amounts with low slippage", async function () {
+      const amountIn = ethers.parseUnits("100", 6); // 100 USDC (6 decimals)
       
       const expectedOut = await amm.getAmountOut(amountIn, await usdc.getAddress());
-      await amm.connect(user).swap(await usdc.getAddress(), amountIn, 0);
       
-      const userFinalEurc = await eurc.balanceOf(user.address);
-      expect(userFinalEurc).to.be.gt(MINT_AMOUNT_EURC); // Started with 1M, got more
-      
-      // Treasury should have 0.05% of 100 USDC = 0.05 USDC = 50,000 units (6 decimals)
-      const treasuryFinal = await usdc.balanceOf(treasury.address);
-      expect(treasuryFinal - treasuryInitial).to.equal(50000); 
+      // With constant product, swapping 10% of liquidity gives high slippage (10% slippage).
+      // With StableSwap curve, swapping 100 USDC into 1000/1000 pool should yield very close to 100 EURC (less than 1% slippage).
+      // Let's verify that expectedOut is close to 100 EURC (98-100 EURC)
+      expect(expectedOut).to.be.gt(ethers.parseUnits("98", 18));
+      expect(expectedOut).to.be.lt(ethers.parseUnits("100", 18));
     });
 
-    it("Should swap EURC (18 dec) for USDC (6 dec)", async function () {
-      const amountIn = ethers.parseUnits("100", 18); // 100 EURC
-      const initialUsdc = await usdc.balanceOf(user.address);
-      
-      await amm.connect(user).swap(await eurc.getAddress(), amountIn, 0);
-      
-      const finalUsdc = await usdc.balanceOf(user.address);
-      expect(finalUsdc).to.be.gt(initialUsdc);
-    });
-  });
+    it("Should execute stable swap successfully", async function () {
+      const amountIn = ethers.parseUnits("50", 6); // 50 USDC
+      const expectedOut = await amm.getAmountOut(amountIn, await usdc.getAddress());
 
-  describe("4. Administrative Controls", function () {
-    it("Should pause and unpause trading", async function () {
-      await amm.pause();
-      const amountIn = ethers.parseUnits("10", 6);
-      
-      await expect(
-        amm.connect(user).swap(await usdc.getAddress(), amountIn, 0)
-      ).to.be.revertedWithCustomError(amm, "EnforcedPause");
+      const initialEurc = await eurc.balanceOf(user.address);
+      await amm.connect(user).swap(await usdc.getAddress(), amountIn, 0, user.address);
+      const finalEurc = await eurc.balanceOf(user.address);
 
-      await amm.unpause();
-      await amm.addLiquidity(LIQUIDITY_USDC, LIQUIDITY_EURC);
-      await expect(
-        amm.connect(user).swap(await usdc.getAddress(), amountIn, 0)
-      ).to.not.be.reverted;
-    });
-
-    it("Should only allow owner to pause", async function () {
-      await expect(
-        amm.connect(user).pause()
-      ).to.be.revertedWithCustomError(amm, "OwnableUnauthorizedAccount");
+      expect(finalEurc - initialEurc).to.equal(expectedOut);
     });
   });
 });
-

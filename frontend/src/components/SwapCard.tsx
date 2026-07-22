@@ -396,19 +396,20 @@ export const SwapCard = ({
   // --- ROBUST PRICE IMPACT CALCULATION ---
   const priceImpact = useMemo(() => {
     if (activeTab === 'stake') return "0.000";
-    if (!fromAmount || isNaN(parseFloat(fromAmount)) || !poolReserves || poolReserves.in === 0n) return "0.000";
+    if (!fromAmount || isNaN(parseFloat(fromAmount)) || !toAmount || isNaN(parseFloat(toAmount))) return "0.000";
 
     try {
-      const amountIn = parseUnits(fromAmount, tokenIn.decimals);
-      const multiplier = 1000000n;
-      const impactBP = (amountIn * 100n * multiplier) / (poolReserves.in + amountIn);
-      const finalImpact = Number(impactBP) / Number(multiplier);
-      if (finalImpact < 0.0001) return "0.000";
-      return finalImpact.toFixed(4);
+      const numIn = parseFloat(fromAmount);
+      const numOut = parseFloat(toAmount);
+      if (numIn <= 0) return "0.000";
+      const ratio = numOut / numIn;
+      const impact = Math.max(0, (1 - ratio) * 100);
+      if (impact < 0.0001) return "0.000";
+      return impact.toFixed(4);
     } catch (e) {
       return "0.000";
     }
-  }, [fromAmount, poolReserves, tokenIn, activeTab]);
+  }, [fromAmount, toAmount, activeTab]);
 
   const networkFee = useMemo(() => {
     if (!gasPrice) return '$0.001';

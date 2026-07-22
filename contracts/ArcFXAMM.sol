@@ -84,7 +84,11 @@ contract ArcFXAMM is ReentrancyGuard, Ownable {
 
         // 0.1% Fee (Reduced from 0.3%)
         uint256 amountInWithFee = (normIn * 999) / 1000;
-        uint256 normOut = (amountInWithFee * normResOut) / (normResIn + amountInWithFee);
+        
+        uint256 k = _k(normResIn, normResOut);
+        uint256 yNew = _getY(normResIn + amountInWithFee, k);
+        require(yNew > 0 && yNew < normResOut, "INSUFFICIENT_LIQUIDITY");
+        uint256 normOut = normResOut - yNew;
         amountOut = _denormalize(normOut, decOut);
 
         require(amountOut >= minAmountOut, "INSUFFICIENT_OUTPUT_AMOUNT");
@@ -102,6 +106,31 @@ contract ArcFXAMM is ReentrancyGuard, Ownable {
     }
 
     // --- Helpers ---
+
+    function _k(uint256 _x, uint256 _y) internal pure returns (uint256) {
+        uint256 x = _x / 1e12;
+        uint256 y = _y / 1e12;
+        uint256 xy = x * y;
+        uint256 x2y2 = (x * x) + (y * y);
+        return xy * x2y2;
+    }
+
+    function _getY(uint256 _x, uint256 k) internal pure returns (uint256) {
+        uint256 x = _x / 1e12;
+        uint256 target = k / x;
+        uint256 y = x; // Initial guess
+        for (uint256 i = 0; i < 64; i++) {
+            uint256 yPrev = y;
+            uint256 y2 = y * y;
+            uint256 numerator = (2 * y2 * y) + target;
+            uint256 denominator = (3 * y2) + (x * x);
+            y = numerator / denominator;
+            if (y > yPrev ? y - yPrev <= 1 : yPrev - y <= 1) {
+                break;
+            }
+        }
+        return y * 1e12;
+    }
 
     function _normalize(uint256 amount, uint8 decimals) internal pure returns (uint256) {
         if (decimals == 18) return amount;
@@ -122,7 +151,15 @@ contract ArcFXAMM is ReentrancyGuard, Ownable {
         
         uint256 normIn = _normalize(amountIn, decIn);
         uint256 amountInWithFee = (normIn * 999) / 1000;
-        uint256 normOut = (amountInWithFee * _normalize(resOut, decOut)) / (_normalize(resIn, decIn) + amountInWithFee);
+        
+        uint256 normResIn = _normalize(resIn, decIn);
+        uint256 normResOut = _normalize(resOut, decOut);
+        
+        uint256 k = _k(normResIn, normResOut);
+        uint256 yNew = _getY(normResIn + amountInWithFee, k);
+        if (yNew >= normResOut) return 0;
+        uint256 normOut = normResOut - yNew;
+        
         return _denormalize(normOut, decOut);
     }
 }
