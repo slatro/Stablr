@@ -32,28 +32,32 @@ const CHAINS = [
     name: 'Base Sepolia', 
     chainId: 84532,
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-    logo: 'https://avatars.githubusercontent.com/u/108554348?s=200&v=4' 
+    logo: 'https://avatars.githubusercontent.com/u/108554348?s=200&v=4',
+    explorer: 'https://sepolia.basescan.org/tx'
   },
   { 
     id: 'arbitrum-sepolia', 
     name: 'Arbitrum Sepolia', 
     chainId: 421614,
     usdc: '0x75faf114eafb1BD239e7be45E73d696117D01309',
-    logo: 'https://avatars.githubusercontent.com/u/84482479?s=200&v=4' 
+    logo: 'https://avatars.githubusercontent.com/u/84482479?s=200&v=4',
+    explorer: 'https://sepolia.arbiscan.io/tx'
   },
   { 
     id: 'optimism-sepolia', 
     name: 'Optimism Sepolia', 
     chainId: 11155420,
     usdc: '0x5fd84259d6f058f24560b3f07e86e21626196723',
-    logo: 'https://avatars.githubusercontent.com/u/45147573?s=200&v=4' 
+    logo: 'https://avatars.githubusercontent.com/u/45147573?s=200&v=4',
+    explorer: 'https://sepolia-optimism.etherscan.io/tx'
   },
   { 
     id: 'sepolia', 
     name: 'Ethereum Sepolia', 
     chainId: 11155111,
     usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
-    logo: 'https://avatars.githubusercontent.com/u/6250754?s=200&v=4' 
+    logo: 'https://avatars.githubusercontent.com/u/6250754?s=200&v=4',
+    explorer: 'https://sepolia.etherscan.io/tx'
   },
 ];
 
@@ -147,7 +151,7 @@ export const BridgePanel = () => {
               type: 'success',
               title: 'Bridge Completed',
               message: `Successfully bridged ${amount} USDC to Arc Testnet!`,
-              link: `https://sepolia.etherscan.io/tx/${txHash}`
+              link: `${srcChain.explorer}/${txHash}`
             });
           }, 2000);
         }, 2500);
@@ -343,7 +347,7 @@ export const BridgePanel = () => {
         {/* EXPLORER LINK */}
         {bridgeStep === 'success' && bridgeTxHash && (
           <a
-            href={`https://sepolia.etherscan.io/tx/${bridgeTxHash}`}
+            href={`${srcChain.explorer}/${bridgeTxHash}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 text-[9px] font-black text-blue-400 hover:text-blue-300 uppercase tracking-widest transition-colors"
