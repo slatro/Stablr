@@ -10,8 +10,8 @@ export const Logo = ({ size, hideText = false }: LogoProps) => (
     <div 
       className="relative flex items-center justify-center shrink-0"
       style={{ 
-        width: size ? `${size * 6}px` : '72px', 
-        height: size ? `${size * 6}px` : '72px'
+        width: size ? `${size * 12}px` : '144px', 
+        height: size ? `${size * 12}px` : '144px'
       }}
     >
       <img 
