@@ -151,8 +151,8 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
           {/* NAV ROW: FULL WIDTH ON MOBILE */}
           <div className="w-full md:flex-1 md:max-w-xl">
             <nav className="flex items-center p-1 bg-white/[0.03] border border-white/[0.05] rounded-lg">
-              <div className="grid grid-cols-4 w-full gap-1">
-                {['dashboard', 'swap', 'pools', 'leaderboard'].map((tab) => (
+              <div className="grid grid-cols-5 w-full gap-1">
+                {['dashboard', 'swap', 'pools', 'bridge', 'leaderboard'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => {

@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
 import { SwapCard } from './components/SwapCard';
 import { PoolsPanel } from './components/PoolsPanel';
+import { BridgePanel } from './components/BridgePanel';
 import { Leaderboard } from './components/Leaderboard';
 import { ActivityTicker } from './components/ActivityTicker';
 import { TradingChart } from './components/TradingChart';
@@ -79,6 +80,7 @@ export default function App() {
           </div>
         );
         case 'pools': return <PoolsPanel />;
+        case 'bridge': return <BridgePanel />;
         case 'leaderboard': return <Leaderboard />;
         default: return <Dashboard />;
       }
