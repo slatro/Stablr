@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Wallet, TrendingUp, Zap, ShieldCheck, ArrowUpRight, ArrowDownRight, Search, Filter, Loader2, CheckCircle2, Layers } from 'lucide-react';
 import { TOKENS, CONTRACT_ADDRESSES } from '../config/contracts';
 import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
@@ -17,6 +17,7 @@ import { useNotifications } from '../context/NotificationContext';
 import { usePoints } from '../context/PointsContext';
 import { useSound } from '../context/SoundContext';
 import { Copy, Users, Gift, Check } from 'lucide-react';
+import { triggerIsland } from './TransactionIsland';
 
 const FormatSymbol = ({ symbol, className = "" }: { symbol: string | undefined, className?: string }) => {
   if (!symbol) return null;
@@ -189,12 +190,88 @@ export const Dashboard = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
   );
 };
 
+// Helper to save/load state to localStorage supporting BigInt
+const replacer = (key: string, value: any) => {
+  if (typeof value === 'bigint') return { _type: 'BigInt', value: value.toString() };
+  return value;
+};
+
+const reviver = (key: string, value: any) => {
+  if (value && value._type === 'BigInt') return BigInt(value.value);
+  return value;
+};
+
+const getCache = (key: string, fallback: any) => {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved, reviver) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
+const setCache = (key: string, value: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value, replacer));
+  } catch (e) {}
+};
+
+// One-time migration: remove old non-wallet-scoped cache keys that stored stale LP data
+// Also clear all pool metadatas caches (they had BigInt serialization issues)
+try {
+  localStorage.removeItem('stablr_balances_cache');
+  localStorage.removeItem('stablr_pool_metadatas_cache');
+  localStorage.removeItem('stablr_staking_data_cache');
+  // Clear all wallet-specific pool metadatas that may have corrupt BigInt data
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('stablr_pool_metadatas_cache_')) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(k => localStorage.removeItem(k));
+} catch (e) {}
+
+
+// Persistent global cache across tab changes and page refreshes
+// Pool addresses and length are shared (not wallet-specific)
+let globalPoolAddressesResCache: any = getCache('stablr_pool_addresses_cache', null);
+let globalPoolsLengthCache: number = getCache('stablr_pools_length_cache', 0);
+// Balances and metadatas are wallet-specific (keyed by address)
+let globalBalancesCache: any = null;
+let globalPoolMetadatasCache: any = null;
+let globalStakingDataCache: any = null;
+let _cachedWallet: string | null = null;
+
+// Call this inside the component after address is known to load wallet-scoped caches
+const loadWalletCaches = (address: string) => {
+  if (_cachedWallet === address) return; // already loaded for this wallet
+  _cachedWallet = address;
+  globalBalancesCache = getCache(`stablr_balances_cache_${address}`, null);
+  globalPoolMetadatasCache = getCache(`stablr_dashboard_pool_metadatas_cache_${address}`, null);
+  globalStakingDataCache = getCache(`stablr_staking_data_cache_${address}`, null);
+};
+
 const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => void }) => {
   const { address } = useAccount();
   const { play } = useSound();
   const { notify } = useNotifications();
   const priceContext = usePrices();
   const prices = priceContext?.prices || {};
+
+  // Load wallet-scoped caches as soon as we know the address
+  useEffect(() => {
+    if (address) {
+      loadWalletCaches(address);
+      if (globalBalancesCache) setBalances(globalBalancesCache);
+      if (globalPoolMetadatasCache) setPoolMetadatas(globalPoolMetadatasCache);
+      // staking data is loaded further down, we will handle that separately if needed
+    } else {
+      setBalances(null);
+      setPoolMetadatas(null);
+    }
+  }, [address]);
 
   const balanceContracts = useMemo(() => {
     return TOKENS.map(t => ({
@@ -205,19 +282,46 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
     }));
   }, [address]);
 
-  const { data: balances } = useReadContracts({
+  const { data: rawBalances, refetch: refetchBalances } = useReadContracts({
     contracts: balanceContracts as any,
-    query: { enabled: !!address, refetchInterval: 5000 }
+    query: { enabled: !!address, refetchInterval: 20000 }
   });
 
-  const { data: usdcNativeBal } = useBalance({ address, query: { enabled: !!address, refetchInterval: 5000 } });
-  const { data: eurcNativeBal } = useReadContract({
+  const { data: rawUsdcNativeBal } = useBalance({ address, query: { enabled: !!address, refetchInterval: 20000 } });
+  const { data: rawEurcNativeBal } = useReadContract({
     address: CONTRACT_ADDRESSES.EURC_NATIVE as `0x${string}`,
     abi: ERC20_ABI.abi || ERC20_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address, refetchInterval: 5000 }
+    query: { enabled: !!address, refetchInterval: 20000 }
   });
+
+  const [balances, setBalances] = useState<any>(globalBalancesCache);
+  const [usdcNativeBal, setUsdcNativeBal] = useState<any>(null);
+  const [eurcNativeBal, setEurcNativeBal] = useState<any>(null);
+
+  useEffect(() => {
+    if (rawBalances && rawBalances.length > 0 && address) {
+      setBalances((prev: any) => {
+        const next = rawBalances.map((curr: any, idx: number) => {
+          if (curr.status === 'success') return curr;
+          return (prev && prev[idx]) || curr;
+        });
+        if (prev && JSON.stringify(prev, replacer) === JSON.stringify(next, replacer)) return prev;
+        globalBalancesCache = next;
+        setCache(`stablr_balances_cache_${address}`, next);
+        return next;
+      });
+    }
+  }, [rawBalances, address]);
+
+  useEffect(() => {
+    if (rawUsdcNativeBal) setUsdcNativeBal(rawUsdcNativeBal);
+  }, [rawUsdcNativeBal]);
+
+  useEffect(() => {
+    if (rawEurcNativeBal !== undefined && rawEurcNativeBal !== null) setEurcNativeBal(rawEurcNativeBal);
+  }, [rawEurcNativeBal]);
 
   // --- ROBUST POOL DISCOVERY ---
   const { data: routerFactory } = useReadContract({
@@ -228,12 +332,23 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
   });
   const activeFactory = useMemo(() => (routerFactory as string) || CONTRACT_ADDRESSES.FACTORY, [routerFactory]);
 
-  const { data: poolsLength } = useReadContract({
+  const { data: rawPoolsLength } = useReadContract({
     address: activeFactory as `0x${string}`,
     abi: FACTORY_ABI.abi || FACTORY_ABI as any,
     functionName: 'allPoolsLength',
-    query: { enabled: !!activeFactory, refetchInterval: 10000 }
+    query: { refetchInterval: 20000 }
   });
+
+  const [poolsLength, setPoolsLength] = useState<number>(globalPoolsLengthCache);
+
+  useEffect(() => {
+    if (rawPoolsLength !== undefined && rawPoolsLength !== null) {
+      const len = Number(rawPoolsLength);
+      globalPoolsLengthCache = len;
+      setCache('stablr_pools_length_cache', len);
+      setPoolsLength(len);
+    }
+  }, [rawPoolsLength]);
 
   const poolAddressContracts = useMemo(() => {
     const length = Number(poolsLength || 0);
@@ -245,10 +360,27 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
     }));
   }, [poolsLength, activeFactory]);
 
-  const { data: poolAddressesRes } = useReadContracts({
+  const { data: rawPoolAddressesRes, refetch: refetchPoolAddresses } = useReadContracts({
     contracts: poolAddressContracts as any,
-    query: { enabled: poolAddressContracts.length > 0, refetchInterval: 10000 }
+    query: { enabled: poolAddressContracts.length > 0, refetchInterval: 20000 }
   });
+
+  const [poolAddressesRes, setPoolAddressesRes] = useState<any>(globalPoolAddressesResCache);
+
+  useEffect(() => {
+    if (rawPoolAddressesRes && rawPoolAddressesRes.length > 0) {
+      setPoolAddressesRes((prev: any) => {
+        const next = rawPoolAddressesRes.map((curr: any, idx: number) => {
+          if (curr.status === 'success') return curr;
+          return (prev && prev[idx]) || curr;
+        });
+        if (prev && JSON.stringify(prev, replacer) === JSON.stringify(next, replacer)) return prev;
+        globalPoolAddressesResCache = next;
+        setCache('stablr_pool_addresses_cache', next);
+        return next;
+      });
+    }
+  }, [rawPoolAddressesRes]);
 
   const poolAddresses = useMemo(() => {
     if (!poolAddressesRes) return [];
@@ -269,10 +401,27 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
     return calls;
   }, [poolAddresses, address]);
 
-  const { data: poolMetadatas } = useReadContracts({
+  const { data: rawPoolMetadatas, refetch: refetchPoolMetadatas } = useReadContracts({
     contracts: poolMetadataContracts as any,
-    query: { enabled: poolMetadataContracts.length > 0, refetchInterval: 5000 }
+    query: { enabled: poolMetadataContracts.length > 0, refetchInterval: 20000 }
   });
+
+  const [poolMetadatas, setPoolMetadatas] = useState<any>(globalPoolMetadatasCache);
+
+  useEffect(() => {
+    if (rawPoolMetadatas && rawPoolMetadatas.length > 0 && address) {
+      setPoolMetadatas((prev: any) => {
+        const next = rawPoolMetadatas.map((curr: any, idx: number) => {
+          if (curr.status === 'success') return curr;
+          return (prev && prev[idx]) || curr;
+        });
+        if (prev && JSON.stringify(prev, replacer) === JSON.stringify(next, replacer)) return prev;
+        globalPoolMetadatasCache = next;
+        setCache(`stablr_dashboard_pool_metadatas_cache_${address}`, next);
+        return next;
+      });
+    }
+  }, [rawPoolMetadatas, address]);
 
   const poolDetails = useMemo(() => {
     if (!poolMetadatas || !poolAddresses) return [];
@@ -286,35 +435,41 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
       const tsRes = poolMetadatas[baseIdx + 4];
       const balRes = poolMetadatas[baseIdx + 5];
 
-      if (balRes?.status === 'success' && (balRes.result as bigint) > 0n) {
-        const t0Addr = t0Res?.result as string;
-        const t1Addr = t1Res?.result as string;
-        const balance = balRes.result as bigint;
-        const totalLiq = tsRes?.result as bigint;
-        const r0 = r0Res?.result as bigint;
-        const r1 = r1Res?.result as bigint;
+      // Explicit BigInt conversion — cached values from localStorage may come back as string/number
+      let balance: bigint;
+      try { balance = BigInt(balRes?.result?.toString() || '0'); } catch { continue; }
+      if (balance <= 0n) continue;
 
-        if (t0Addr && t1Addr) {
-          const t0 = TOKENS.find(t => t.addr.toLowerCase() === t0Addr.toLowerCase());
-          const t1 = TOKENS.find(t => t.addr.toLowerCase() === t1Addr.toLowerCase());
-          if (t0 && t1) {
-            let usdValue = 0;
-            let sharePct = 0;
-            if (totalLiq > 0n) {
-              sharePct = Number((balance * 10000n) / totalLiq) / 100;
-              const val0 = parseFloat(formatUnits((balance * (r0 || 0n)) / totalLiq, t0.decimals));
-              const val1 = parseFloat(formatUnits((balance * (r1 || 0n)) / totalLiq, t1.decimals));
-              const price0 = prices[t0.symbol]?.price || 0;
-              const price1 = prices[t1.symbol]?.price || 0;
-              usdValue = (val0 * price0) + (val1 * price1);
-            }
-            const isTryc = t0.symbol.includes('TRYC') || t1.symbol.includes('TRYC');
-            const randomVal = parseInt(poolAddresses[i].slice(2, 6), 16) / 65535;
-            const apr = isTryc ? (9 + (isNaN(randomVal) ? 0 : randomVal) * 3).toFixed(2) + '%' : (2 + (isNaN(randomVal) ? 0 : randomVal) * 2).toFixed(2) + '%';
-            pos.push({ pair: [t0, t1], lpBalance: formatUnits(balance, 18), poolAddr: poolAddresses[i], sharePct, usdValue, apr });
-          }
-        }
+      // Safe string conversion — localStorage cache can return objects instead of strings
+      const t0Addr = typeof t0Res?.result === 'string' ? t0Res.result : String(t0Res?.result || '');
+      const t1Addr = typeof t1Res?.result === 'string' ? t1Res.result : String(t1Res?.result || '');
+      if (!t0Addr || !t1Addr || t0Addr === 'undefined' || t1Addr === 'undefined') continue;
+
+      const t0 = TOKENS.find(t => t.addr.toLowerCase() === t0Addr.toLowerCase());
+      const t1 = TOKENS.find(t => t.addr.toLowerCase() === t1Addr.toLowerCase());
+      if (!t0 || !t1) continue;
+
+      let totalLiq: bigint;
+      let r0: bigint;
+      let r1: bigint;
+      try { totalLiq = BigInt(tsRes?.result?.toString() || '0'); } catch { totalLiq = 0n; }
+      try { r0 = BigInt(r0Res?.result?.toString() || '0'); } catch { r0 = 0n; }
+      try { r1 = BigInt(r1Res?.result?.toString() || '0'); } catch { r1 = 0n; }
+
+      let usdValue = 0;
+      let sharePct = 0;
+      if (totalLiq > 0n) {
+        sharePct = Number((balance * 10000n) / totalLiq) / 100;
+        const val0 = parseFloat(formatUnits((balance * r0) / totalLiq, t0.decimals));
+        const val1 = parseFloat(formatUnits((balance * r1) / totalLiq, t1.decimals));
+        const price0 = prices[t0.symbol]?.price || 0;
+        const price1 = prices[t1.symbol]?.price || 0;
+        usdValue = (val0 * price0) + (val1 * price1);
       }
+      const isTryc = t0.symbol.includes('TRYC') || t1.symbol.includes('TRYC');
+      const randomVal = parseInt(poolAddresses[i].slice(2, 6), 16) / 65535;
+      const apr = isTryc ? (9 + (isNaN(randomVal) ? 0 : randomVal) * 3).toFixed(2) + '%' : (2 + (isNaN(randomVal) ? 0 : randomVal) * 2).toFixed(2) + '%';
+      pos.push({ pair: [t0, t1], lpBalance: formatUnits(balance, 18), poolAddr: poolAddresses[i], sharePct, usdValue, apr });
     }
     return pos;
   }, [poolMetadatas, poolAddresses, prices]);
@@ -389,13 +544,42 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
   const { localSwapCount, localPointsOffset, settlePoints } = usePoints();
 
   // --- STAKING HOOKS ---
-  const { data: stakingData } = useReadContracts({
+  const { data: rawStakingData, refetch: refetchStaking } = useReadContracts({
     contracts: [
       { address: (CONTRACT_ADDRESSES as any).STAKING_CONTRACT as `0x${string}`, abi: STAKING_ABI as any, functionName: 'getExchangeRate' },
       { address: (CONTRACT_ADDRESSES as any).STAKING_CONTRACT as `0x${string}`, abi: STAKING_ABI as any, functionName: 'totalSupply' },
     ],
-    query: { enabled: !!address, refetchInterval: 5000 }
+    query: { enabled: !!address, refetchInterval: 20000 }
   });
+
+  const [stakingData, setStakingData] = useState<any>(globalStakingDataCache);
+
+  useEffect(() => {
+    if (rawStakingData && rawStakingData.length > 0) {
+      setStakingData((prev: any) => {
+        const next = rawStakingData.map((curr: any, idx: number) => {
+          if (curr.status === 'success') return curr;
+          return (prev && prev[idx]) || curr;
+        });
+        if (prev && JSON.stringify(prev, replacer) === JSON.stringify(next, replacer)) return prev;
+        globalStakingDataCache = next;
+        return next;
+      });
+    }
+  }, [rawStakingData]);
+
+  // Instantly refresh all Dashboard data on any transaction success event
+  useEffect(() => {
+    const handleTx = () => {
+      if (refetchBalances) refetchBalances();
+      if (refetchPoolAddresses) refetchPoolAddresses();
+      if (refetchPoolMetadatas) refetchPoolMetadatas();
+      if (refetchStaking) refetchStaking();
+      if (refetchPoints) refetchPoints();
+    };
+    window.addEventListener('arc-transaction', handleTx);
+    return () => window.removeEventListener('arc-transaction', handleTx);
+  }, [refetchBalances, refetchPoolAddresses, refetchPoolMetadatas, refetchStaking, refetchPoints]);
 
   const exchangeRate = useMemo(() => stakingData?.[0].status === 'success' ? stakingData[0].result as bigint : 1000000n, [stakingData]);
   const totalStaked = useMemo(() => stakingData?.[1].status === 'success' ? stakingData[1].result as bigint : 0n, [stakingData]);
@@ -480,7 +664,7 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
       const val = parseFloat(formatUnits(usdcNativeBal.value, 18));
       if (val > 0) arr.push({ symbol: 'USDC', amount: val.toLocaleString(undefined, { maximumFractionDigits: 2 }), value: val * (prices['USDC']?.price || 1), color: colors[0] });
     }
-    if (eurcNativeBal !== undefined) {
+    if (eurcNativeBal !== undefined && eurcNativeBal !== null) {
       const val = parseFloat(formatUnits(BigInt(eurcNativeBal.toString()), 6));
       if (val > 0) arr.push({ symbol: 'EURC', amount: val.toLocaleString(undefined, { maximumFractionDigits: 2 }), value: val * (prices['EURC']?.price || 1), color: colors[1] });
     }
@@ -551,7 +735,7 @@ const DashboardContent = ({ onTradeAction }: { onTradeAction: (asset: any) => vo
                   const priceData = prices[token.symbol] || { price: 1, change24h: '+0.00%' };
                   let formattedBal = '0.00';
                   if (token.symbol === 'USDC' && usdcNativeBal) formattedBal = parseFloat(formatUnits(usdcNativeBal.value, 18)).toFixed(4);
-                  else if (token.symbol === 'EURC' && eurcNativeBal !== undefined) formattedBal = parseFloat(formatUnits(BigInt(eurcNativeBal.toString()), 6)).toFixed(4);
+                  else if (token.symbol === 'EURC' && eurcNativeBal !== undefined && eurcNativeBal !== null) formattedBal = parseFloat(formatUnits(BigInt(eurcNativeBal.toString()), 6)).toFixed(4);
                   else {
                     const balRes = balances?.[i];
                     const rawBal = (balRes?.status === 'success' && balRes.result !== undefined) ? BigInt(balRes.result.toString()) : 0n;

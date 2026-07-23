@@ -120,7 +120,7 @@ export default function App() {
               <footer className="py-8 md:py-12 px-4 md:px-8 border-t border-white/[0.03] mt-auto bg-transparent">
                 <div className="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-3 items-center gap-8 md:gap-4">
                   <div className="flex justify-center md:justify-start">
-                    <Logo size={14} />
+                    <Logo size={5} />
                   </div>
                   
                   <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3">
@@ -146,8 +146,11 @@ export default function App() {
                   </div>
 
                   <div className="flex flex-col items-center md:items-end gap-1">
-                    <span className="text-[8px] font-black text-white/10 uppercase tracking-[0.2em] md:tracking-[0.4em]">© 2026 STABLR PROTOCOL.</span>
-                    <span className="text-[8px] font-black text-white/10 uppercase tracking-[0.2em] md:tracking-[0.4em]">Live on Arc Network</span>
+                    <span className="text-[8px] font-black text-white/10 uppercase tracking-[0.2em] md:tracking-[0.4em]">© 2026 STABLR PROTOCOL</span>
+                    <div className="flex items-center gap-1.5 opacity-40 hover:opacity-100 transition-opacity">
+                      <img src="/assets/arc-logo-transparent.png" className="w-4 h-4 object-contain" alt="Arc Network" />
+                      <span className="text-[8px] font-black text-white uppercase tracking-[0.2em] md:tracking-[0.4em]">Live on Arc Network</span>
+                    </div>
                   </div>
                 </div>
               </footer>

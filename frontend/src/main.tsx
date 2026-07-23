@@ -22,6 +22,11 @@ const arcTestnet = {
   blockExplorers: {
     default: { name: "ArcScan", url: ARC_TESTNET_CONFIG.blockExplorerUrl },
   },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    },
+  },
   testnet: true,
 } as const;
 
@@ -40,7 +45,7 @@ const config = getDefaultConfig({
   },
 });
 
-config.connectors.push(socialWalletConnector());
+// config.connectors.push(socialWalletConnector());
 
 const queryClient = new QueryClient();
 

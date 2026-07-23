@@ -16,7 +16,7 @@ interface PriceContextType {
 const PriceContext = createContext<PriceContextType>({
   prices: {},
   loading: true,
-  volume24h: 1248590.42,
+  volume24h: 0,
   liquidity: 5543633.18,
   recordTrade: () => {},
 });
@@ -35,13 +35,11 @@ export const PriceProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [loading, setLoading] = useState(true);
 
   // REAL STATS STATE
-  const [volume24h, setVolume24h] = useState(1248590.42);
+  const [volume24h, setVolume24h] = useState(0);
   const [liquidity, setLiquidity] = useState(5543633.18);
 
   useEffect(() => {
-    const savedVol = localStorage.getItem('arcfx_vol');
     const savedLiq = localStorage.getItem('arcfx_liq');
-    if (savedVol) setVolume24h(parseFloat(savedVol));
     if (savedLiq) setLiquidity(parseFloat(savedLiq));
   }, []);
 

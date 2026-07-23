@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { X, Copy, LogOut, CheckCircle2, Wallet, ExternalLink, Zap, Edit2, Award, Star, Shield, Trophy, Camera } from 'lucide-react';
-import { useAccount, useDisconnect, useReadContract, useBalance } from 'wagmi';
+import { useAccount, useDisconnect, useReadContract, useBalance, useConfig } from 'wagmi';
 import { formatUnits } from 'viem';
 import { CONTRACT_ADDRESSES } from '../config/contracts';
 import ERC20_ABI from '../abis/ERC20.json';
+import { useSequentialReadContracts as useReadContracts } from '../hooks/useSequentialReadContracts';
 
 export const AVATARS = [
   'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
@@ -49,22 +50,57 @@ export const ProfileModal = ({ isOpen, onClose, selectedAvatar, setSelectedAvata
   const { data: rawBalNativeEURC } = useReadContract({ address: CONTRACT_ADDRESSES.EURC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined });
   const { data: decNativeEURC } = useReadContract({ address: CONTRACT_ADDRESSES.EURC_NATIVE as `0x${string}`, abi: ERC20_ABI, functionName: 'decimals' });
 
-  const { data: balAUSDC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aUSDC as `0x${string}` });
-  const { data: balAEURC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aEURC as `0x${string}` });
-  const { data: balATRYC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aTRYC as `0x${string}` });
-  const { data: balAGBPC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aGBPC as `0x${string}` });
-  const { data: balAJPYC } = useBalance({ address: address, token: CONTRACT_ADDRESSES.aJPYC as `0x${string}` });
+  // Fetch all a-Token balances sequentially to prevent rate limits
+  const { data: rawBalancesData } = useReadContracts({
+    contracts: [
+      { address: CONTRACT_ADDRESSES.aUSDC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined },
+      { address: CONTRACT_ADDRESSES.aEURC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined },
+      { address: CONTRACT_ADDRESSES.aTRYC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined },
+      { address: CONTRACT_ADDRESSES.aGBPC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined },
+      { address: CONTRACT_ADDRESSES.aJPYC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined },
+      { address: CONTRACT_ADDRESSES.astUSDC as `0x${string}`, abi: ERC20_ABI, functionName: 'balanceOf', args: address ? [address] : undefined },
+    ],
+    query: {
+      enabled: !!address && isOpen,
+    }
+  });
+
+  const [balNativeUSDC, setBalNativeUSDC] = useState<any>(null);
+  const [balNativeEURC, setBalNativeEURC] = useState<any>(null);
+  const [balancesData, setBalancesData] = useState<any>(null);
+
+  useEffect(() => {
+    if (rawBalNativeUSDC !== undefined && rawBalNativeUSDC !== null) setBalNativeUSDC(rawBalNativeUSDC);
+  }, [rawBalNativeUSDC]);
+
+  useEffect(() => {
+    if (rawBalNativeEURC !== undefined && rawBalNativeEURC !== null) setBalNativeEURC(rawBalNativeEURC);
+  }, [rawBalNativeEURC]);
+
+  useEffect(() => {
+    if (rawBalancesData && rawBalancesData.length > 0 && rawBalancesData.some((b: any) => b.status === 'success')) {
+      setBalancesData(rawBalancesData);
+    }
+  }, [rawBalancesData]);
 
   if (!isOpen) return null;
 
+  const balUSDC = balancesData?.[0]?.status === 'success' ? balancesData[0].result : undefined;
+  const balEURC = balancesData?.[1]?.status === 'success' ? balancesData[1].result : undefined;
+  const balTRYC = balancesData?.[2]?.status === 'success' ? balancesData[2].result : undefined;
+  const balGBPC = balancesData?.[3]?.status === 'success' ? balancesData[3].result : undefined;
+  const balJPYC = balancesData?.[4]?.status === 'success' ? balancesData[4].result : undefined;
+  const balASTUSDC = balancesData?.[5]?.status === 'success' ? balancesData[5].result : undefined;
+
   const balances = [
-    { symbol: 'USDC', name: 'Native Gas', amount: rawBalNativeUSDC, dec: (decNativeUSDC as number) || 18, icon: TOKEN_ICONS.aUSDC },
-    { symbol: 'EURC', name: 'Native Euro', amount: rawBalNativeEURC, dec: 6, icon: TOKEN_ICONS.aEURC },
-    { symbol: 'aUSDC', name: 'Arc Dollar', amount: balAUSDC?.value, dec: 6, icon: TOKEN_ICONS.aUSDC },
-    { symbol: 'aEURC', name: 'Arc Euro', amount: balAEURC?.value, dec: 18, icon: TOKEN_ICONS.aEURC },
-    { symbol: 'aTRYC', name: 'Arc Lira', amount: balATRYC?.value, dec: 18, icon: TOKEN_ICONS.aTRYC },
-    { symbol: 'aGBPC', name: 'Arc Pound', amount: balAGBPC?.value, dec: 18, icon: TOKEN_ICONS.aGBPC },
-    { symbol: 'aJPYC', name: 'Arc Yen', amount: balAJPYC?.value, dec: 18, icon: TOKEN_ICONS.aJPYC },
+    { symbol: 'USDC', name: 'Native Gas', amount: balNativeUSDC, dec: (decNativeUSDC as number) || 18, icon: TOKEN_ICONS.aUSDC },
+    { symbol: 'EURC', name: 'Native Euro', amount: balNativeEURC, dec: 6, icon: TOKEN_ICONS.aEURC },
+    { symbol: 'aUSDC', name: 'Arc Dollar', amount: balUSDC, dec: 6, icon: TOKEN_ICONS.aUSDC },
+    { symbol: 'aEURC', name: 'Arc Euro', amount: balEURC, dec: 18, icon: TOKEN_ICONS.aEURC },
+    { symbol: 'aTRYC', name: 'Arc Lira', amount: balTRYC, dec: 18, icon: TOKEN_ICONS.aTRYC },
+    { symbol: 'aGBPC', name: 'Arc Pound', amount: balGBPC, dec: 18, icon: TOKEN_ICONS.aGBPC },
+    { symbol: 'aJPYC', name: 'Arc Yen', amount: balJPYC, dec: 18, icon: TOKEN_ICONS.aJPYC },
+    { symbol: 'astUSDC', name: 'Staked Arc Dollar', amount: balASTUSDC, dec: 6, icon: TOKEN_ICONS.astUSDC },
   ];
 
   return (
@@ -170,7 +206,7 @@ export const ProfileModal = ({ isOpen, onClose, selectedAvatar, setSelectedAvata
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-xs font-black text-white/90 tabular-nums">
-                    {b.amount !== undefined ? parseFloat(formatUnits(b.amount as bigint, b.dec)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }) : '0.00'}
+                    {b.amount !== undefined && b.amount !== null ? parseFloat(formatUnits(b.amount as bigint, b.dec)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }) : '0.00'}
                   </span>
                 </div>
               </div>

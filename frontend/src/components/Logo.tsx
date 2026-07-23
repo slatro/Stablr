@@ -11,10 +11,10 @@ export const Logo = ({ size, hideText = false, showSubtitle = false }: LogoProps
     <div 
       className="relative flex items-center justify-center shrink-0 overflow-visible"
       style={{ 
-        width: size ? `${size * 8}px` : '96px', 
-        height: size ? `${size * 8}px` : '96px',
-        marginTop: '-12px',
-        marginBottom: '-12px'
+        width: size ? `${size * 8}px` : '48px', 
+        height: size ? `${size * 8}px` : '48px',
+        marginTop: '-4px',
+        marginBottom: '-4px'
       }}
     >
       <img 

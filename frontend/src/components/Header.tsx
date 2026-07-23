@@ -54,7 +54,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
   }, [address]);
 
   const { data: faucetHash, writeContract: faucetWrite, isPending: isFaucetPending, error: faucetError, reset: resetFaucet } = useWriteContract();
-  const { isLoading: isFaucetConfirming, isSuccess: isFaucetSuccess } = useWaitForTransactionReceipt({ hash: faucetHash });
+  const { isLoading: isFaucetConfirming, isSuccess: isFaucetSuccess, error: faucetConfirmError, isError: isFaucetConfirmError } = useWaitForTransactionReceipt({ hash: faucetHash });
 
   useEffect(() => {
     if (isFaucetSuccess && address) {
@@ -70,6 +70,22 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
     }
   }, [isFaucetSuccess, address, faucetHash]);
 
+  // Handle wallet signature/estimation errors
+  useEffect(() => {
+    if (faucetError) {
+      triggerIsland('error', 'Faucet Request Failed', undefined, { message: faucetError.message || 'Transaction failed.' });
+      if (resetFaucet) resetFaucet();
+    }
+  }, [faucetError]);
+
+  // Handle on-chain revert errors
+  useEffect(() => {
+    if (isFaucetConfirmError) {
+      triggerIsland('error', 'Faucet Tx Reverted', faucetHash, { message: faucetConfirmError?.message || 'Transaction reverted.' });
+      if (resetFaucet) resetFaucet();
+    }
+  }, [isFaucetConfirmError, faucetConfirmError, faucetHash]);
+
   // Points/Check-in Logic
   const { data: nextCheckIn, refetch: refetchCheckIn } = useReadContract({
     address: CONTRACT_ADDRESSES.ARC_POINTS as `0x${string}`,
@@ -77,7 +93,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
     functionName: 'getNextCheckInTime',
     args: address ? [address] : undefined,
     chainId: ARC_TESTNET_CONFIG.chainId,
-    query: { enabled: !!address, refetchInterval: 10000 }
+    query: { enabled: !!address, refetchInterval: 30000 }
   });
 
   const { writeContract: checkInWrite, data: checkInHash, isPending: isCheckInPending, error: checkInError, reset: resetCheckIn } = useWriteContract();
@@ -156,6 +172,7 @@ export const Header = ({ activeTab, setActiveTab }: { activeTab: string, setActi
                     onClick={() => {
                       play('click');
                       setActiveTab(tab);
+                      window.dispatchEvent(new CustomEvent('arc-nav-clicked', { detail: tab }));
                     }}
                     className={`py-2 rounded-md text-[8px] md:text-[9px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] transition-all duration-500 text-center ${
                       activeTab === tab 

@@ -20,19 +20,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const audioRefs = useRef<Partial<Record<SoundType, HTMLAudioElement>>>({});
 
   const play = useCallback((type: SoundType) => {
-    try {
-      // Lazy load audio
-      if (!audioRefs.current[type]) {
-        audioRefs.current[type] = new Audio(SOUND_URLS[type]);
-        audioRefs.current[type]!.volume = type === 'click' ? 0.03 : 0.1; // MUCH LOWER VOLUME
-      }
-
-      const audio = audioRefs.current[type]!;
-      audio.currentTime = 0;
-      audio.play().catch(e => console.log('Audio playback blocked until user interaction.'));
-    } catch (err) {
-      console.warn('Sound playback failed:', err);
-    }
+    // Sound disabled per user request
   }, []);
 
   return (

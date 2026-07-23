@@ -1,0 +1,15 @@
+{
+  "description": "REAL ON-CHAIN SNAPSHOT DIRECTLY FROM RPC",
+  "snapshotBlock": 53153280,
+  "baseTvl": 0,
+  "baseVolume": 0,
+  "baseChart": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ]
+}
